@@ -5,4 +5,6 @@
     <string name="answers">"answers"</string>
     <string name="url">"https://app.check24.de/vg2-quiz/quiz.json"</string>
     <string name="Loading">"Loading.."</string>
+
+
 </resources>

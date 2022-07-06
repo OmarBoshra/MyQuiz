@@ -3,16 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../layout/custom_preview.xml" value="0.19635416666666666" />
         <entry key="app/src/main/res/drawable-anydpi/check24_logo.xml" value="0.34" />
         <entry key="app/src/main/res/drawable-anydpi/false_button.xml" value="0.34" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.34" />
         <entry key="app/src/main/res/drawable/button.xml" value="0.196" />
+        <entry key="app/src/main/res/drawable/button_default.xml" value="0.248" />
         <entry key="app/src/main/res/drawable/correct_button.xml" value="0.178" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.34" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3591485507246377" />
         <entry key="app/src/main/res/layout/activity_question_answer.xml" value="0.29981884057971014" />
         <entry key="app/src/main/res/layout/list_item.xml" value="0.14628623188405798" />
+        <entry key="app/src/main/res/layout/progress.xml" value="0.16927083333333334" />
         <entry key="app/src/main/res/layout/question_answer.xml" value="0.29981884057971014" />
+        <entry key="app/src/main/res/layout/quiz_page.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/widget_list_item.xml" value="0.1703125" />
+        <entry key="app/src/main/res/layout/widget_progressbar.xml" value="0.25" />
       </map>
     </option>
   </component>

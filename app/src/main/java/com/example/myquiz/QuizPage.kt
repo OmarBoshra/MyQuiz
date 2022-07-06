@@ -4,13 +4,14 @@ import android.app.ProgressDialog
 import android.content.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -19,6 +20,7 @@ import com.example.myquiz.databinding.QuizPageBinding
 import com.example.myquiz.models.Answers
 import com.example.myquiz.models.Question
 import com.example.myquiz.models.QuestionsAndAnswers
+import com.example.myquiz.widgets.Check24_ProgressBar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -29,18 +31,22 @@ import java.util.concurrent.Executors
 class QuizPage : AppCompatActivity() {
 
     private lateinit var binding: QuizPageBinding
+//    private lateinit var widgetBinding: widget
+
     private var questionScore: Int = 0
     private var totalScore: Int = 0
     private var currentQuestionIndex: Int = 0
     private var TotalQuestions: Int = 0
     private var questionslist: List<Question>? = ArrayList()
     private var AnswersHashMap: HashMap<String, String> = HashMap()
+    private var questionTimer: Handler? = null
 
 
-    private lateinit var dialogProgress: ProgressDialog
+    private lateinit var dialogProgress: Check24_ProgressBar
     private lateinit var adapter: ArrayAdapter<String>
     private lateinit var answersList: ArrayList<String>
     private lateinit var correctAnswer: String
+
 
     private lateinit var listofAllAnswers: ArrayList<Answers>
 
@@ -71,10 +77,11 @@ class QuizPage : AppCompatActivity() {
         }
 
 
-        dialogProgress = ProgressDialog(this@QuizPage);
-        dialogProgress.setMessage(getResources().getString(R.string.Loading));
-        dialogProgress.setCancelable(false);
-        dialogProgress.show();
+
+        dialogProgress = Check24_ProgressBar(this@QuizPage)
+        dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogProgress.show()
+
 
         var receiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -135,13 +142,16 @@ class QuizPage : AppCompatActivity() {
 
                     adapter = ArrayAdapter(
                         this@QuizPage,
-                        R.layout.list_item, answersList
+                        R.layout.widget_list_item, answersList
                     )
 
                     binding.answersList.adapter = adapter
 
                     // initializing the header
                     binding.questionIndicator.setText("Frage " + (currentQuestionIndex + 1) + "/$TotalQuestions - Aktuelle Punktzahl: $totalScore")
+
+                    // initialize the progressIndicator
+                    binding.progresIndicator.max = TotalQuestions
 
                     // initialize the question score
                     questionScore = questionslist!!.get(0).score!!
@@ -181,12 +191,33 @@ class QuizPage : AppCompatActivity() {
 
     private fun navigation() {
 
+
+        // if user doesn't answer in 10 seconds ,consider it a wroung answer and go to next question
+
+        questionTimer= Handler()
+        questionTimer!!.postDelayed({
+
+            nextQuestion(false)
+
+        }, 10000)
+
+
+
         binding.answersList.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 // This is your listview's selected item
                 val item = parent.getItemAtPosition(position)
                 if (parent.isPressed) {
+
+                    // disable the timer
+
+                        questionTimer?.removeCallbacksAndMessages(null)
+
+
+
                     var answer: Boolean = false
+
+
 
                     if (item.toString().equals(AnswersHashMap.get(correctAnswer))) {
                         Toast.makeText(
@@ -212,20 +243,19 @@ class QuizPage : AppCompatActivity() {
 
                     parent.isEnabled = false
 
-                    dialogProgress = ProgressDialog(this@QuizPage);
-                    dialogProgress.setMessage(getResources().getString(R.string.Loading));
+
                     dialogProgress.setCancelable(false);
                     dialogProgress.show();
 
                     Handler().postDelayed({
                         parent.isEnabled = true
 
-                        view.background = AppCompatResources.getDrawable(this, R.drawable.button)
-                        AppCompatResources.getDrawable(this, R.drawable.button)
+                        view.background = AppCompatResources.getDrawable(this, R.drawable.button_default)
+                        AppCompatResources.getDrawable(this, R.drawable.button_default)
 
 
                         parent.getChildAt(answersList.indexOf(AnswersHashMap.get(correctAnswer))).background =
-                            AppCompatResources.getDrawable(this, R.drawable.button)
+                            AppCompatResources.getDrawable(this, R.drawable.button_default)
 
                         nextQuestion(answer)
 
@@ -242,13 +272,20 @@ class QuizPage : AppCompatActivity() {
 
     private fun nextQuestion(answer: Boolean) {
 
+        // reset the image
         binding.questionImage.setImageBitmap(null)
 
-
+        // next question counter
         currentQuestionIndex++
-        if (currentQuestionIndex < listofAllAnswers.size) {
-            // show the new answers for the next question
 
+
+
+        if (currentQuestionIndex < listofAllAnswers.size) {
+
+            // update progress indicator
+            binding.progresIndicator.setProgress(currentQuestionIndex)
+
+            // show the new answers for the next question
 
             answersList.clear()
 
@@ -280,45 +317,44 @@ class QuizPage : AppCompatActivity() {
 
             adapter.notifyDataSetChanged()
 
-        }
 
-        // change the header
-        if (answer)
-            totalScore = totalScore + questionScore
+            // change the header
+            if (answer)
+                totalScore = totalScore + questionScore
 
-        binding.questionIndicator.setText("Frage " + (currentQuestionIndex + 1) + "/$TotalQuestions - Aktuelle Punktzahl: $totalScore")
+            binding.questionIndicator.setText("Frage " + (currentQuestionIndex + 1) + "/$TotalQuestions - Aktuelle Punktzahl: $totalScore")
 
-        // change the number of points
-        questionScore = questionslist?.get(currentQuestionIndex)?.score!!
-        binding.numberOfPoints.setText("$questionScore Punkte")
+            // change the number of points
+            questionScore = questionslist?.get(currentQuestionIndex)?.score!!
+            binding.numberOfPoints.setText("$questionScore Punkte")
 
-        // change the question
+            // change the question
 
-        binding.question.setText(questionslist!!.get(currentQuestionIndex).question)
+            binding.question.setText(questionslist!!.get(currentQuestionIndex).question)
 
 
-        // change the image
+            // change the image
 
 //        Picasso.get().load(questionslist!!.get(currentQuestionIndex).questionImageUrl).into(LogoAriline)
 
 
-        questionslist!!.get(currentQuestionIndex).questionImageUrl?.let {
+            questionslist!!.get(currentQuestionIndex).questionImageUrl?.let {
 
-            if (it.equals("null"))
+                if (it.equals("null"))
+                    dialogProgress.dismiss()
+
+                DownloadImageFromInternet(
+                    binding.questionImage,
+                    it
+                )
+            } ?: kotlin.run {
                 dialogProgress.dismiss()
-
-            DownloadImageFromInternet(
-                binding.questionImage,
-                it
-            )
-        } ?: kotlin.run {
-            dialogProgress.dismiss()
-        }
-        correctAnswer = questionslist!!.get(currentQuestionIndex).correctAnswer.toString()
+            }
+            correctAnswer = questionslist!!.get(currentQuestionIndex).correctAnswer.toString()
 
 
 // if the user is at the last question
-        if (currentQuestionIndex == listofAllAnswers.size) {
+        } else if (currentQuestionIndex == listofAllAnswers.size) {
 
 
             var pref: SharedPreferences = getSharedPreferences("MyPref", 0)
@@ -330,12 +366,16 @@ class QuizPage : AppCompatActivity() {
                 editor.apply()
             }
 
+            dialogProgress.dismiss()
 
-            val NavigtionIntent = Intent(this@QuizPage, QuizPage::class.java)
+            val NavigtionIntent = Intent(this@QuizPage, MainActivity::class.java)
             startActivity(NavigtionIntent);
 
 
         }
+
+
+
 
     }
 
