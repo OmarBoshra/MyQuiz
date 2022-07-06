@@ -194,12 +194,9 @@ class QuizPage : AppCompatActivity() {
     //todo inspect the code
     //todo modulate
 
-    private fun navigation() {
-
+    private fun timer (){
 
         // if user doesn't answer in 10 seconds ,consider it a wroung answer and go to next question
-
-
         questionTimer = Handler(Looper.getMainLooper())
         questionTimer!!.postDelayed({
 
@@ -207,7 +204,11 @@ class QuizPage : AppCompatActivity() {
 
         }, 10000)
 
+    }
 
+    private fun navigation() {
+
+        timer()
 
         binding.answersList.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, _ ->
@@ -397,7 +398,7 @@ class QuizPage : AppCompatActivity() {
 
 
         }
-
+        timer()
 
     }
 
