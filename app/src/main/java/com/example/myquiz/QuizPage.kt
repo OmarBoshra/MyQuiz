@@ -1,6 +1,5 @@
 package com.example.myquiz
 
-import android.app.ProgressDialog
 import android.content.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,16 +10,16 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
 import com.example.myquiz.databinding.QuizPageBinding
 import com.example.myquiz.models.Answers
 import com.example.myquiz.models.Question
 import com.example.myquiz.models.QuestionsAndAnswers
-import com.example.myquiz.widgets.Check24_ProgressBar
+import com.example.myquiz.custom_widgets.Check24_ProgressBar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -31,14 +30,15 @@ import java.util.concurrent.Executors
 class QuizPage : AppCompatActivity() {
 
     private lateinit var binding: QuizPageBinding
-//    private lateinit var widgetBinding: widget
+
+    // private lateinit var widgetBinding: widget
 
     private var questionScore: Int = 0
     private var totalScore: Int = 0
     private var currentQuestionIndex: Int = 0
-    private var TotalQuestions: Int = 0
+    private var totalQuestions: Int = 0
     private var questionslist: List<Question>? = ArrayList()
-    private var AnswersHashMap: HashMap<String, String> = HashMap()
+    private var answersHashMap: HashMap<String, String> = HashMap()
     private var questionTimer: Handler? = null
 
 
@@ -48,23 +48,19 @@ class QuizPage : AppCompatActivity() {
     private lateinit var correctAnswer: String
 
 
-    private lateinit var listofAllAnswers: ArrayList<Answers>
+    private lateinit var listofAllAnswersObject: ArrayList<Answers>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
 
-        binding = QuizPageBinding.inflate(layoutInflater);
+        binding = QuizPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        binding.questionImage.setImageBitmap()
-//        binding.question.setText("")
-//        binding.numberOfPoints.setText("")
-//        binding.questionIndicator.setText("")
 
         // initial setting of shared preferences
-        var pref: SharedPreferences
+        val pref: SharedPreferences
 
         if (!applicationContext.getSharedPreferences("MyPref", 0).contains("HighestScore")) {
             pref = applicationContext.getSharedPreferences("MyPref", 0)
@@ -83,29 +79,29 @@ class QuizPage : AppCompatActivity() {
         dialogProgress.show()
 
 
-        var receiver: BroadcastReceiver = object : BroadcastReceiver() {
+        val receiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val data: String? = intent.extras!!.getString("jsonresponse")
 
 
                 val listType: Type = object : TypeToken<QuestionsAndAnswers>() {}.type
 
-                var gson = Gson()
+                val gson = Gson()
 
 
-                var QuestionsAndAnswers: QuestionsAndAnswers = gson.fromJson(data, listType)
+                val questionsAndAnswers: QuestionsAndAnswers = gson.fromJson(data, listType)
 
-                questionslist = QuestionsAndAnswers.questions
+                questionslist = questionsAndAnswers.questions
 
                 if (questionslist != null) {
 
-                    listofAllAnswers = ArrayList()
+                    listofAllAnswersObject = ArrayList()
                     questionslist?.forEach {
                         // adding the counter to get the total number of questions
-                        TotalQuestions++
+                        totalQuestions++
 
                         // adding the list of answers then adding them to a greater list of all answers for each question
-                        it.answers?.let { it1 -> listofAllAnswers.add(it1) }
+                        it.answers?.let { it1 -> listofAllAnswersObject.add(it1) }
 
 
                     }
@@ -114,30 +110,25 @@ class QuizPage : AppCompatActivity() {
                     answersList = ArrayList()
 
 
+                    // fill the list of answers
 
-                    listofAllAnswers.get(0).A?.let {
-                        answersList.add(it)
-                        AnswersHashMap.put("A", it)
+
+                    resources.getStringArray(R.array.answer_letters).forEach {
+
+                        val alphabet = it
+
+                        listofAllAnswersObject[0].letterchecker(alphabet)?.let { it1 ->
+
+                            answersList.add(it1)
+
+                            answersHashMap[alphabet] = it1
+
+                        }
 
                     }
 
-                    listofAllAnswers.get(0).B?.let {
-                        answersList.add(it)
 
-                        AnswersHashMap.put("B", it)
-                    }
-                    listofAllAnswers.get(0).C?.let {
-                        answersList.add(it)
-                        AnswersHashMap.put("C", it)
-
-                    }
-                    listofAllAnswers.get(0).D?.let {
-                        answersList.add(it)
-
-                        AnswersHashMap.put("D", it)
-                    }
-
-                    Collections.shuffle(answersList);
+                    answersList.shuffle()
                     // initialize an array adapter
 
                     adapter = ArrayAdapter(
@@ -147,24 +138,36 @@ class QuizPage : AppCompatActivity() {
 
                     binding.answersList.adapter = adapter
 
+                    val quizHeaderText: StringBuilder = StringBuilder()
+                    quizHeaderText.append("Frage ")
+                    quizHeaderText.append(currentQuestionIndex + 1)
+                    quizHeaderText.append("/")
+                    quizHeaderText.append(totalQuestions)
+                    quizHeaderText.append(" - Aktuelle Punktzahl: ")
+                    quizHeaderText.append(totalScore)
+
                     // initializing the header
-                    binding.questionIndicator.setText("Frage " + (currentQuestionIndex + 1) + "/$TotalQuestions - Aktuelle Punktzahl: $totalScore")
+                    binding.questionIndicator.text = quizHeaderText
 
                     // initialize the progressIndicator
-                    binding.progresIndicator.max = TotalQuestions
+                    binding.progresIndicator.max = totalQuestions
 
                     // initialize the question score
-                    questionScore = questionslist!!.get(0).score!!
-                    binding.numberOfPoints.setText("$questionScore Punkte")
+                    questionScore = questionslist!![0].score!!
+
+                    val questionScoreText: StringBuilder = StringBuilder()
+                    questionScoreText.append(questionScore)
+                    questionScoreText.append(" Punkte")
+                    binding.numberOfPoints.text = questionScoreText
 
                     //initialize the question
-                    binding.question.setText(questionslist!!.get(0).question)
-                    correctAnswer = questionslist!!.get(0).correctAnswer.toString()
+                    binding.question.text = questionslist!![0].question
+                    correctAnswer = questionslist!![0].correctAnswer.toString()
 
                     // initializing the image
 
-                    questionslist!!.get(0).questionImageUrl?.let {
-                        DownloadImageFromInternet(
+                    questionslist!![0].questionImageUrl?.let {
+                        downloadImageFromInternet(
                             binding.questionImage,
                             it
                         )
@@ -183,18 +186,21 @@ class QuizPage : AppCompatActivity() {
         }
 
 
-        registerReceiver(receiver, IntentFilter("data"));
+        registerReceiver(receiver, IntentFilter("data"))
 
 
     }
-
+    //todo make sure sore is working
+    //todo inspect the code
+    //todo modulate
 
     private fun navigation() {
 
 
         // if user doesn't answer in 10 seconds ,consider it a wroung answer and go to next question
 
-        questionTimer= Handler()
+
+        questionTimer = Handler(Looper.getMainLooper())
         questionTimer!!.postDelayed({
 
             nextQuestion(false)
@@ -204,57 +210,68 @@ class QuizPage : AppCompatActivity() {
 
 
         binding.answersList.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
+            AdapterView.OnItemClickListener { parent, view, position, _ ->
                 // This is your listview's selected item
                 val item = parent.getItemAtPosition(position)
                 if (parent.isPressed) {
 
                     // disable the timer
 
-                        questionTimer?.removeCallbacksAndMessages(null)
+                    questionTimer?.removeCallbacksAndMessages(null)
+
+
+                    val answer: Boolean
 
 
 
-                    var answer: Boolean = false
-
-
-
-                    if (item.toString().equals(AnswersHashMap.get(correctAnswer))) {
+                    if (item.toString() == answersHashMap[correctAnswer]) {
                         Toast.makeText(
                             applicationContext,
                             "Correct answer",
                             Toast.LENGTH_SHORT
                         ).show()
                         answer = true
-                        view.setBackgroundColor(resources.getColor(R.color.green))
+                        view.setBackgroundColor(
+                            ContextCompat.getColor(
+                                this@QuizPage,
+                                R.color.green
+                            )
+                        )
                     } else {
                         Toast.makeText(
                             applicationContext,
                             "InCorrect answer",
                             Toast.LENGTH_SHORT
                         ).show()
-                        view.setBackgroundColor(resources.getColor(R.color.red))
-                        parent.getChildAt(answersList.indexOf(AnswersHashMap.get(correctAnswer)))
-                            .setBackgroundColor(resources.getColor(R.color.green))
+                        view.setBackgroundColor(ContextCompat.getColor(this@QuizPage, R.color.red))
+                        parent.getChildAt(answersList.indexOf(answersHashMap[correctAnswer]))
+                            .setBackgroundColor(
+                                ContextCompat.getColor(
+                                    this@QuizPage,
+                                    R.color.green
+                                )
+                            )
 
                         answer = false
 
                     }
 
+
                     parent.isEnabled = false
 
 
-                    dialogProgress.setCancelable(false);
-                    dialogProgress.show();
+                    dialogProgress.setCancelable(false)
+                    dialogProgress.show()
 
-                    Handler().postDelayed({
+                    Handler(Looper.getMainLooper()).postDelayed({
                         parent.isEnabled = true
 
-                        view.background = AppCompatResources.getDrawable(this, R.drawable.button_default)
+                        view.background =
+                            AppCompatResources.getDrawable(this, R.drawable.button_default)
                         AppCompatResources.getDrawable(this, R.drawable.button_default)
 
 
-                        parent.getChildAt(answersList.indexOf(AnswersHashMap.get(correctAnswer))).background =
+                        parent.getChildAt(answersList.indexOf(answersHashMap[correctAnswer])).background =
                             AppCompatResources.getDrawable(this, R.drawable.button_default)
 
                         nextQuestion(answer)
@@ -280,39 +297,33 @@ class QuizPage : AppCompatActivity() {
 
 
 
-        if (currentQuestionIndex < listofAllAnswers.size) {
+        if (currentQuestionIndex < listofAllAnswersObject.size) {
 
             // update progress indicator
-            binding.progresIndicator.setProgress(currentQuestionIndex)
+            binding.progresIndicator.progress = currentQuestionIndex
 
             // show the new answers for the next question
 
             answersList.clear()
 
 
-            AnswersHashMap = HashMap()
-            listofAllAnswers.get(currentQuestionIndex).A?.let {
-                answersList.add(it)
-                AnswersHashMap.put("A", it)
+            answersHashMap = HashMap()
+
+            // fill the list of answers
+            resources.getStringArray(R.array.answer_letters).forEach {
+
+                val alphabet = it
+
+                listofAllAnswersObject[0].letterchecker(alphabet)?.let { it1 ->
+
+                    answersList.add(it1)
+
+                    answersHashMap[alphabet] = it1
+
+                }
 
             }
-
-            listofAllAnswers.get(currentQuestionIndex).B?.let {
-                answersList.add(it)
-
-                AnswersHashMap.put("B", it)
-            }
-            listofAllAnswers.get(currentQuestionIndex).C?.let {
-                answersList.add(it)
-                AnswersHashMap.put("C", it)
-
-            }
-            listofAllAnswers.get(currentQuestionIndex).D?.let {
-                answersList.add(it)
-
-                AnswersHashMap.put("D", it)
-            }
-            Collections.shuffle(answersList)
+            answersList.shuffle()
 
 
             adapter.notifyDataSetChanged()
@@ -320,41 +331,54 @@ class QuizPage : AppCompatActivity() {
 
             // change the header
             if (answer)
-                totalScore = totalScore + questionScore
+                totalScore += questionScore
 
-            binding.questionIndicator.setText("Frage " + (currentQuestionIndex + 1) + "/$TotalQuestions - Aktuelle Punktzahl: $totalScore")
+            val quizHeaderText: StringBuilder = StringBuilder()
+            quizHeaderText.append("Frage ")
+            quizHeaderText.append(currentQuestionIndex + 1)
+            quizHeaderText.append("/")
+            quizHeaderText.append(totalQuestions)
+            quizHeaderText.append(" - Aktuelle Punktzahl: ")
+            quizHeaderText.append(totalScore)
+
+
+            binding.questionIndicator.text = quizHeaderText
+
 
             // change the number of points
             questionScore = questionslist?.get(currentQuestionIndex)?.score!!
-            binding.numberOfPoints.setText("$questionScore Punkte")
+
+
+            val questionScoreText: StringBuilder = StringBuilder()
+            questionScoreText.append(questionScore)
+            questionScoreText.append(" Punkte")
+            binding.numberOfPoints.text = questionScoreText
+
+            binding.numberOfPoints.text = questionScoreText
 
             // change the question
 
-            binding.question.setText(questionslist!!.get(currentQuestionIndex).question)
+            binding.question.text = questionslist!![currentQuestionIndex].question
 
 
-            // change the image
 
-//        Picasso.get().load(questionslist!!.get(currentQuestionIndex).questionImageUrl).into(LogoAriline)
+            questionslist!![currentQuestionIndex].questionImageUrl?.let {
 
-
-            questionslist!!.get(currentQuestionIndex).questionImageUrl?.let {
-
-                if (it.equals("null"))
+                if (it == ("null"))
                     dialogProgress.dismiss()
 
-                DownloadImageFromInternet(
+                downloadImageFromInternet(
                     binding.questionImage,
                     it
                 )
             } ?: kotlin.run {
                 dialogProgress.dismiss()
             }
-            correctAnswer = questionslist!!.get(currentQuestionIndex).correctAnswer.toString()
+            correctAnswer = questionslist!![currentQuestionIndex].correctAnswer.toString()
 
 
 // if the user is at the last question
-        } else if (currentQuestionIndex == listofAllAnswers.size) {
+        } else if (currentQuestionIndex == listofAllAnswersObject.size) {
 
 
             var pref: SharedPreferences = getSharedPreferences("MyPref", 0)
@@ -368,24 +392,21 @@ class QuizPage : AppCompatActivity() {
 
             dialogProgress.dismiss()
 
-            val NavigtionIntent = Intent(this@QuizPage, MainActivity::class.java)
-            startActivity(NavigtionIntent);
+            val navigtionIntent = Intent(this@QuizPage, MainActivity::class.java)
+            startActivity(navigtionIntent)
 
 
         }
 
 
-
-
     }
 
-    fun DownloadImageFromInternet(imageView: AppCompatImageView, url: String) {
-
+    fun downloadImageFromInternet(imageView: AppCompatImageView, url: String) {
 
         val executor = Executors.newSingleThreadExecutor()
         val handler = Handler(Looper.getMainLooper())
 
-        var image: Bitmap? = null
+        var image: Bitmap?
 
         executor.execute {
 
@@ -413,36 +434,7 @@ class QuizPage : AppCompatActivity() {
 
 
     }
-//    private inner class DownloadImageFromInternet(
-//        var imageView: AppCompatImageView,
-//        var url: String
-//    ) : AsyncTask<String, Void, Bitmap?>() {
-//        init {
-//            Toast.makeText(
-//                applicationContext,
-//                "Please wait, it may take a few minutes...",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-//
-//        override fun doInBackground(vararg urls: String): Bitmap? {
-//            val imageURL = url
-//            var image: Bitmap? = null
-//            try {
-//                val `in` = java.net.URL(imageURL).openStream()
-//                image = BitmapFactory.decodeStream(`in`)
-//            } catch (e: Exception) {
-//                Log.e("Error Message", e.message.toString())
-//                e.printStackTrace()
-//            }
-//            return image
-//        }
-//
-//        override fun onPostExecute(result: Bitmap?) {
-//            imageView.setImageBitmap(result)
-//            dialogProgress.dismiss()
-//        }
-//    }
+
 
 }
 

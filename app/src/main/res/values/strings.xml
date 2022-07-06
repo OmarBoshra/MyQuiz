@@ -7,4 +7,13 @@
     <string name="Loading">"Loading.."</string>
 
 
+    <string-array name="answer_letters">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+
+    </string-array>
+
+
 </resources>
