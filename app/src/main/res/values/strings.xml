@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyQuiz</string>
+    <string name="start_button">"START"</string>
+    <string name="answers">"answers"</string>
+    <string name="url">"https://app.check24.de/vg2-quiz/quiz.json"</string>
+    <string name="Loading">"Loading.."</string>
+</resources>

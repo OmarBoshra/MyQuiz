@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/check24_MainColor"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/basic_margin"
+        app:srcCompat="@drawable/check24_biglogo" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/quiz_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_margin="@dimen/basic_margin"
+        android:textStyle="bold"
+        android:text="Das Quiz" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/highscore_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_margin="@dimen/basic_margin"
+        android:text="Highscore 500 Punkte" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_margin="@dimen/basic_margin"
+        android:id="@+id/start_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:background="@color/check24_SecondaryColor"
+        android:text="@string/start_button" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+
+

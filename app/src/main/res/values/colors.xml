@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="check24_MainColor">#005EA8</color>
+    <color name="white">#FFFFFF</color>
+    <color name="check24_SecondaryColor">#5DA3DC</color>
+    <color name="green">#3BA427</color>
+    <color name="red">#F44336</color>
+
+</resources>
