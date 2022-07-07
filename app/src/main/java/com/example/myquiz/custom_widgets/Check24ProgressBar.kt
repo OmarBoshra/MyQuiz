@@ -7,7 +7,7 @@ import androidx.annotation.StyleRes
 import com.example.myquiz.databinding.WidgetProgressbarBinding
 
 
-class Check24_ProgressBar @JvmOverloads constructor(
+class Check24ProgressBar @JvmOverloads constructor(
     context: Context,
     @StyleRes themeResId: Int = 0
 ) : Dialog(context, themeResId) {

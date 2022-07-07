@@ -1,4 +1,4 @@
-package com.example.myquiz
+package com.example.myquiz.services
 
 import android.app.IntentService
 import android.content.Intent
@@ -7,6 +7,7 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.myquiz.R
 import org.json.JSONException
 
 
@@ -26,7 +27,7 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
 
     private fun jsonParse(url: String, mQueue: RequestQueue) {
 
-        var jsonobjectString: String = ""
+        var jsonobjectString: String
 
 
         val request = JsonObjectRequest(
@@ -35,11 +36,11 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
                 try {
                     jsonobjectString = response.toString()
 
-                    jsonobjectString?.let { Log.d("TAG", it) };
+                    jsonobjectString.let { Log.d("TAG", it) }
 
                     val i = Intent("data")
                     i.putExtra("jsonresponse", jsonobjectString)
-                    sendBroadcast(i);
+                    sendBroadcast(i)
 
 
                 } catch (e: JSONException) {
@@ -71,10 +72,6 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
 //        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
 
 
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
 }

@@ -8,7 +8,7 @@
     android:background="@color/check24_MainColor"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageView"

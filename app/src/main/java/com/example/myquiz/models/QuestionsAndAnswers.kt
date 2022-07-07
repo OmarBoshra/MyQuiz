@@ -1,8 +1,5 @@
 package com.example.myquiz.models
 
-import com.google.gson.annotations.SerializedName
-
-private val savedA: String? = null
 
 data class QuestionsAndAnswers(
     val questions: List<Question>
@@ -29,16 +26,16 @@ data class Answers(
 
     fun letterchecker(letter: String): String? {
 
-        if (letter == "A")
-            return A
-        if (letter == "B")
-            return B
-        if (letter == "C")
-            return C
-        if (letter == "D")
-            return D
+        return when (letter) {
+            "A"-> A
+            "B" -> B
+            "C" -> C
+            "D" -> D
+            else -> { // Note the block
+                null
+            }
+        }
 
-        return null
     }
 
 
