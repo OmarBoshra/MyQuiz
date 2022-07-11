@@ -1,4 +1,4 @@
-package com.example.myquiz.Activities
+package com.example.myquiz.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
-import com.example.myquiz.Activities.QuizPage.QuizPage
+import com.example.myquiz.activities.QuizPage.QuizPage
 import com.example.myquiz.databinding.ActivityMainBinding
 import com.example.myquiz.services.BackgroundIntentService
 

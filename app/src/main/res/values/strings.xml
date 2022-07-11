@@ -4,6 +4,7 @@
     <string name="start_button">"START"</string>
     <string name="answers">"answers"</string>
     <string name="url">"https://app.check24.de/vg2-quiz/quiz.json"</string>
+    <string name="baseurl">"https://app.check24.de/vg2-quiz/"</string>
     <string name="Loading">"Loading.."</string>
 
 

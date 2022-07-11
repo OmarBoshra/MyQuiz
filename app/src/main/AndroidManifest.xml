@@ -16,12 +16,12 @@
         android:theme="@style/Theme.MyQuiz"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.QuizPage.QuizPage"
+            android:name=".activities.QuizPage.QuizPage"
             android:exported="false" />
 
 
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
