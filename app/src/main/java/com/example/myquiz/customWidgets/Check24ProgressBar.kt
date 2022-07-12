@@ -1,4 +1,4 @@
-package com.example.myquiz.custom_widgets
+package com.example.myquiz.customWidgets
 
 import android.app.Dialog
 import android.content.Context

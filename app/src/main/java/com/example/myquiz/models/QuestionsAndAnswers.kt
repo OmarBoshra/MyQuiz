@@ -5,8 +5,7 @@ data class QuestionsAndAnswers(
     val questions: List<Question>,
 
 
-
-)
+    )
 
 data class Question(
     val answers: HashMap<String, String>? = null,
@@ -15,8 +14,6 @@ data class Question(
     val questionImageUrl: String? = null,
     val score: Int? = null,
 )
-
-
 
 
 //fun toString(): String? {

@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
-import com.example.myquiz.activities.QuizPage.QuizPage
+import com.example.myquiz.activities.quizPage.QuizPage
 import com.example.myquiz.databinding.ActivityMainBinding
 import com.example.myquiz.services.BackgroundIntentService
 

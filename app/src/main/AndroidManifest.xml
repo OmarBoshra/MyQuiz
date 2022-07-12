@@ -16,7 +16,7 @@
         android:theme="@style/Theme.MyQuiz"
         tools:targetApi="31">
         <activity
-            android:name=".activities.QuizPage.QuizPage"
+            android:name=".activities.quizPage.QuizPage"
             android:exported="false" />
 
 
