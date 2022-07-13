@@ -17,6 +17,7 @@
         <entry key="app/src/main/res/layout/progress.xml" value="0.16927083333333334" />
         <entry key="app/src/main/res/layout/question_answer.xml" value="0.29981884057971014" />
         <entry key="app/src/main/res/layout/quiz_page.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/recycler_view.xml" value="0.24166666666666667" />
         <entry key="app/src/main/res/layout/widget_list_item.xml" value="0.1703125" />
         <entry key="app/src/main/res/layout/widget_progressbar.xml" value="0.25" />
       </map>

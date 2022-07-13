@@ -19,6 +19,11 @@ import com.example.myquiz.interfaces.QuizUIListener
 import com.example.myquiz.models.QuizPageData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +35,7 @@ import java.lang.reflect.Type
 class QuizPage : AppCompatActivity(), QuizUIListener {
 
     private lateinit var binding: QuizPageBinding
+    private var result = "Result #1"
 
     private lateinit var dialogProgress: Check24ProgressBar
     private lateinit var questionslist: List<Question>
@@ -45,12 +51,24 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
 
 
 
+
         dialogProgress = Check24ProgressBar(this@QuizPage)
         dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 //        dialogProgress.show()
 
         // initiate receiving the quiz data
-        recivedQuizData()
+
+        // IO ,Main ,Default
+        CoroutineScope(IO).launch {
+            getRetroData()
+
+        }
+
+        CoroutineScope(Main).launch {
+            recivedQuizData()
+
+        }
+
 
 
     }
@@ -63,7 +81,7 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
 
                 // getting thedata JSON as a class object
 
-                getRetroData()
+
 
                 val data: String? = intent.extras!!.getString("jsonresponse")
                 val listType: Type = object : TypeToken<QuestionsAndAnswers>() {}.type
@@ -122,8 +140,9 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
 
     }
 
-    private fun getRetroData() {
+    private suspend fun getRetroData() {
 
+        delay(1000)
         val retrofitBuilder = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://app.check24.de/vg2-quiz/")
             .build()
