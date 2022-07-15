@@ -4,19 +4,23 @@ import android.content.*
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myquiz.R
 import com.example.myquiz.activities.MainActivity
 import com.example.myquiz.activities.quizPage.adapters.AnswersListAdapter
+import com.example.myquiz.activities.quizPage.adapters.RecyclerViewAdapter
 import com.example.myquiz.activities.quizPage.views.ListListener
 import com.example.myquiz.activities.quizPage.views.QuestionDataInitializer
 import com.example.myquiz.databinding.QuizPageBinding
-import com.example.myquiz.models.Question
-import com.example.myquiz.models.QuestionsAndAnswers
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.ApiInterface
 import com.example.myquiz.interfaces.QuizUIListener
-import com.example.myquiz.models.QuizPageData
+import com.example.myquiz.models.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +45,40 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
     private lateinit var questionslist: List<Question>
     private var quizPageData = QuizPageData()
 
+    private lateinit var recyclerViewAdapter: RecyclerViewAdapter
+    private lateinit var quizPageViewModel: QuizPageViewModel
+
+    private fun initViewModel (){
+
+        quizPageViewModel = ViewModelProvider(this).get(QuizPageViewModel::class.java)
+        quizPageViewModel.getLiveDataObserver().observe(this,object:Observer<RecyclerData>{
+            override fun onChanged(t: RecyclerData?) {
+                if( t!= null){
+
+                    recyclerViewAdapter.setUpdatedData(t)
+                    recyclerViewAdapter.notifyDataSetChanged()
+
+                }else
+                    Toast.makeText(this@QuizPage, "error in getting data", Toast.LENGTH_SHORT).show()
+
+
+            }
+
+
+        })
+        quizPageViewModel.makeAPiCall()
+
+
+    }
+
+    private fun iniRecyclerView (){
+
+        // initilaize recycler view
+        recyclerViewAdapter = RecyclerViewAdapter()
+        binding.answersRecyclerView.adapter = recyclerViewAdapter
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,30 +88,37 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         setContentView(binding.root)
 
 
+        iniRecyclerView()
+        initViewModel ()
+        // IO ,Main ,Default
+//        CoroutineScope(IO).launch {
+////            getRetroData()
+//
+//
+//        }
+
 
 
         dialogProgress = Check24ProgressBar(this@QuizPage)
         dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 //        dialogProgress.show()
 
+
+
         // initiate receiving the quiz data
 
-        // IO ,Main ,Default
-        CoroutineScope(IO).launch {
-            getRetroData()
 
-        }
 
-        CoroutineScope(Main).launch {
-            recivedQuizData()
-
-        }
+//        CoroutineScope(Main).launch {
+//            recivedQuizData()
+//
+//        }
 
 
 
     }
 
-    private fun recivedQuizData() {
+    private suspend fun recivedQuizData() {
 
 
         val receiver: BroadcastReceiver = object : BroadcastReceiver() {
