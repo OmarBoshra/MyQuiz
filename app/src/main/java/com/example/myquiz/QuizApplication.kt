@@ -16,8 +16,6 @@ class QuizApplication:Application() {
     override fun onCreate() {
         super.onCreate()
 
-
-
             retroComponent = DaggerRetroComponent.builder()
                 .retroModule(RetroModule())
                 .build()

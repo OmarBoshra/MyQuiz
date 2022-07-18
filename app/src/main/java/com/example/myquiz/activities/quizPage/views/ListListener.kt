@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.example.myquiz.R
+import com.example.myquiz.activities.quizPage.QuizPage
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.QuizUIListener
 import com.example.myquiz.models.Question
@@ -17,8 +18,7 @@ import com.example.myquiz.models.QuizPageData
 class ListListener(
     private var QuizDataInterface: QuizUIListener,
     private var quizPageData: QuizPageData,
-    private val questionslist: List<Question>,
-    val context: Activity,
+    val context: QuizPage,
     private val dialogProgress: Check24ProgressBar
 ) :
     AdapterView.OnItemClickListener {
@@ -105,7 +105,7 @@ class ListListener(
 
                 QuestionDataInitializer(
                     QuizDataInterface, context,
-                    questionslist, quizPageData, dialogProgress
+                    false,quizPageData, dialogProgress
                 )
 
             }, 2000)

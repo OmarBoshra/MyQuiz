@@ -6,10 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myquiz.QuizApplication
 import com.example.myquiz.R
 import com.example.myquiz.activities.MainActivity
 import com.example.myquiz.activities.quizPage.adapters.AnswersListAdapter
@@ -24,7 +25,6 @@ import com.example.myquiz.models.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,36 +39,47 @@ import java.lang.reflect.Type
 class QuizPage : AppCompatActivity(), QuizUIListener {
 
     private lateinit var binding: QuizPageBinding
-    private var result = "Result #1"
+
+    var questionslistHashmap = hashMapOf<String, Question>()
 
     private lateinit var dialogProgress: Check24ProgressBar
-    private lateinit var questionslist: List<Question>
+
     private var quizPageData = QuizPageData()
 
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
     private lateinit var quizPageViewModel: QuizPageViewModel
 
     private fun initViewModel (){
-
         quizPageViewModel = ViewModelProvider(this).get(QuizPageViewModel::class.java)
-        quizPageViewModel.getLiveDataObserver().observe(this,object:Observer<RecyclerData>{
-            override fun onChanged(t: RecyclerData?) {
-                if( t!= null){
 
-                    recyclerViewAdapter.setUpdatedData(t)
-                    recyclerViewAdapter.notifyDataSetChanged()
+        quizPageViewModel.liveDataList.observe(this) {
 
-                }else
-                    Toast.makeText(this@QuizPage, "error in getting data", Toast.LENGTH_SHORT).show()
+                if( it!= null){
+//                    recyclerViewAdapter.setUpdatedData(it)
+//                    recyclerViewAdapter.notifyDataSetChanged()
 
+                    it.question?.let { id ->
+
+                        // here the question was considered to be the id but ofcourse in reality this would not be the case
+                        questionslistHashmap.put(id,it)
+
+
+
+                        QuestionDataInitializer(
+                            this@QuizPage, this@QuizPage,
+                            true,quizPageData, dialogProgress
+                        )
+
+
+                    }
+
+                }else {
+                    Toast.makeText(this@QuizPage, "error in getting data", Toast.LENGTH_SHORT)
+                        .show()
+                }
 
             }
-
-
-        })
         quizPageViewModel.makeAPiCall()
-
-
     }
 
     private fun iniRecyclerView (){
@@ -82,142 +93,55 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         // initialize the UI binding
         binding = QuizPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // initiate progress dialogue
+        dialogProgress = Check24ProgressBar(this@QuizPage)
+        dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogProgress.show()
+
+        receiveQuizData()
 
         iniRecyclerView()
         initViewModel ()
-        // IO ,Main ,Default
-//        CoroutineScope(IO).launch {
-////            getRetroData()
-//
-//
-//        }
-
-
-
-        dialogProgress = Check24ProgressBar(this@QuizPage)
-        dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//        dialogProgress.show()
-
-
-
-        // initiate receiving the quiz data
-
-
-
-//        CoroutineScope(Main).launch {
-//            recivedQuizData()
-//
-//        }
-
-
 
     }
 
-    private suspend fun recivedQuizData() {
+    private fun receiveQuizData() {
 
 
-        val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-
-                // getting thedata JSON as a class object
+        //initialize progress indicator
+        binding.progresIndicator.max = questionslistHashmap.size
 
 
+        // initialize an list adapter
+        val answersList: ArrayList<String> = ArrayList()
+        val adapter = AnswersListAdapter(
+            this@QuizPage,
+            R.layout.widget_list_item, answersList
+        )
 
-                val data: String? = intent.extras!!.getString("jsonresponse")
-                val listType: Type = object : TypeToken<QuestionsAndAnswers>() {}.type
-                val gson = Gson()
-                val questionsAndAnswers: QuestionsAndAnswers = gson.fromJson(data, listType)
+        binding.answersList.adapter = adapter
+        quizPageData.adapter = adapter // save it to the data model
 
-                questionslist = questionsAndAnswers.questions
-                //initialize progress indicator
-                binding.progresIndicator.max = questionslist.size
+        // initilize list itemlistener
 
-                // initialize an list adapter
-                val answersList: ArrayList<String> = ArrayList()
-                val adapter = AnswersListAdapter(
-                    this@QuizPage,
-                    R.layout.widget_list_item, answersList
-                )
+        binding.answersList.onItemClickListener = ListListener(
+            this@QuizPage,
+            quizPageData,
+            this@QuizPage,
+            dialogProgress
+        )
 
-                binding.answersList.adapter = adapter
-                quizPageData.adapter = adapter // save it to the data model
-
-
-                // initilize the question initializer
-//                val questionObj = QuestionDataInitializer(this@QuizPage,
-//                    this@QuizPage,
-//                    questionslist!!,quizPageData, dialogProgress
-//                )
-
-
-                // initilize list itemlistener
-
-                binding.answersList.onItemClickListener = ListListener(
-                    this@QuizPage,
-                    quizPageData,
-                    questionslist,
-                    this@QuizPage,
-                    dialogProgress
-                )
-
-                // first initialization of the questionsData
-                QuestionDataInitializer(
-                    this@QuizPage, context,
-                    questionslist, quizPageData, dialogProgress
-                )
-
-
-                //    val timerobj = Timers()
-//                    timerobj.questiontimer()
-
-
-            }
-
-        }
-
-        registerReceiver(receiver, IntentFilter("data"))
-
-
+        // first initialization of the questionsData
+        QuestionDataInitializer(
+            this@QuizPage, this@QuizPage,
+             false,quizPageData, dialogProgress
+        )
     }
 
-    private suspend fun getRetroData() {
-
-        delay(1000)
-        val retrofitBuilder = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://app.check24.de/vg2-quiz/")
-            .build()
-            .create(ApiInterface::class.java)
-
-        val retrofitdata = retrofitBuilder.getdata()
-
-        retrofitdata.enqueue(object : Callback<QuestionsAndAnswers?> {
-            override fun onResponse(
-                call: Call<QuestionsAndAnswers?>,
-                response: Response<QuestionsAndAnswers?>
-            ) {
-
-                val responseBody = response.body()
-
-//                val StringBuilder = StringBuilder()
-                responseBody?.questions?.forEach {
-
-
-                }
-            }
-
-            override fun onFailure(call: Call<QuestionsAndAnswers?>, t: Throwable) {
-
-
-            }
-        })
-
-
-    }
 
     private fun questionRenderer(
         question: String?,
@@ -276,12 +200,13 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
             startActivity(navigtionIntent)
         } else {
 
-
-            val questionScore = questionslist[quizPageData.currentQuestionIndex].score!!
-            val totalQuestions = questionslist.size
-            val question = questionslist[quizPageData.currentQuestionIndex].question
-            questionRenderer(question, questionScore, totalQuestions, quizPageData)
-
+            val questionslist = ArrayList(questionslistHashmap.values)
+            if(questionslist.size>0) {
+                val questionScore = questionslist[quizPageData.currentQuestionIndex].score!!
+                val totalQuestions = questionslist.size
+                val question = questionslist[quizPageData.currentQuestionIndex].question
+                questionRenderer(question, questionScore, totalQuestions, quizPageData)
+            }
 
         }
 

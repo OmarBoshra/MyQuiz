@@ -17,12 +17,12 @@ data class QuizPageData(
 
     // for the QuestionDataInitializer
     var adapter: AnswersListAdapter? = null,
-    var answerResult: Boolean = false,
+    var answerResult: Boolean? = null,
 
 
     //show on UIPage
     var questionImageBitMap: Bitmap? = null,
-    var currentQuestionIndex: Int = -1,
+    var currentQuestionIndex: Int = 0,
     var totalScore: Int = 0,
     var islastQuestion: Boolean = false
 

@@ -38,9 +38,7 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.myViewHolde
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myViewHolder {
 
-        val binding: RecyclerviewRowitemBinding
-
-        binding = RecyclerviewRowitemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+       val binding = RecyclerviewRowitemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
         return myViewHolder(binding)
     }

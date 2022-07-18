@@ -5,8 +5,6 @@ import android.content.SharedPreferences
 
 class HighscoreSaver(context: Context, totalScore: Int) :
     SharedPreferences.OnSharedPreferenceChangeListener {
-
-
     init {
 
         val pref = context.applicationContext.getSharedPreferences("MyPref", 0)

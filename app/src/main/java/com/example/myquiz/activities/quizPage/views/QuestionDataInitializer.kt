@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import com.example.myquiz.activities.quizPage.HighscoreSaver
+import com.example.myquiz.activities.quizPage.QuizPage
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.QuizUIListener
 
@@ -18,8 +19,8 @@ import java.util.concurrent.Executors
 
 class QuestionDataInitializer(
     private var QuizDataInterface: QuizUIListener,
-    context: Context,
-    questionslist: List<Question>,
+    context: QuizPage,
+    isFromViewModel:Boolean ,
     private var quizPageData: QuizPageData,
     dialogProgress: Check24ProgressBar
 ) {
@@ -39,6 +40,8 @@ class QuestionDataInitializer(
         quizPageData.answersHashMap = answersHashMap
         quizPageData.correctAnswer = correctAnswer
         quizPageData.answersList = answersList
+
+
 
 
     }
@@ -64,20 +67,22 @@ class QuestionDataInitializer(
         // gets and returns for itself
         var currentQuestionIndex = quizPageData.currentQuestionIndex
         var totalScore = quizPageData.totalScore
+        val questionTimer = quizPageData.questionTimer
 
         // gets from listListener
         val adapter = quizPageData.adapter
-
-
-        // gets
-
         val answerResult = quizPageData.answerResult
 
+        // gets
+        val questionslist = ArrayList(context.questionslistHashmap.values)
 
-        // next question counter
 
+        questionTimer.removeCallbacksAndMessages(null)
+        if (questionslist.size>0) {
 
-        currentQuestionIndex++
+            // next question counter
+            if(isFromViewModel == false)
+              currentQuestionIndex++
 
 
         // check if the next question is still not the last question
@@ -102,7 +107,7 @@ class QuestionDataInitializer(
 
 
             // change the header
-            if (answerResult)
+            if (answerResult == true)
                 totalScore += (
                         questionslist[currentQuestionIndex - 1].score!!
                         )
@@ -160,14 +165,19 @@ class QuestionDataInitializer(
 
 // if the user is at the last question
         }
+
+
         if (currentQuestionIndex == questionslist.size) {
 
 
             HighscoreSaver(context, totalScore)
             dialogProgress.dismiss()
-            islastQuestion = true
 
-            quizPageData.islastQuestion = islastQuestion
+
+                islastQuestion = true
+                quizPageData.islastQuestion = islastQuestion
+
+
 
             questionData()
         } else {
@@ -180,7 +190,7 @@ class QuestionDataInitializer(
 
                 QuestionDataInitializer(
                     QuizDataInterface, context,
-                    questionslist, quizPageData, dialogProgress
+                    false,quizPageData, dialogProgress
                 )
 
             }, 10000)
@@ -188,6 +198,7 @@ class QuestionDataInitializer(
             quizPageData.questionTimer = questionTimer
 
 
+        }
         }
 
 
