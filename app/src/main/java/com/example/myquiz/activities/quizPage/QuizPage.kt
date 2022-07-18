@@ -55,21 +55,16 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         quizPageViewModel.liveDataList.observe(this) {
 
                 if( it!= null){
-//                    recyclerViewAdapter.setUpdatedData(it)
-//                    recyclerViewAdapter.notifyDataSetChanged()
 
                     it.question?.let { id ->
 
                         // here the question was considered to be the id but ofcourse in reality this would not be the case
                         questionslistHashmap.put(id,it)
 
-
-
                         QuestionDataInitializer(
                             this@QuizPage, this@QuizPage,
                             true,quizPageData, dialogProgress
                         )
-
 
                     }
 
@@ -87,6 +82,12 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         // initilaize recycler view
         recyclerViewAdapter = RecyclerViewAdapter()
         binding.answersRecyclerView.adapter = recyclerViewAdapter
+        recyclerViewAdapter.setOnItemClickListener(ListListener(this@QuizPage,
+            quizPageData,
+            this@QuizPage,
+            dialogProgress))
+
+        quizPageData.adapter =recyclerViewAdapter
     }
 
 
@@ -116,24 +117,16 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         binding.progresIndicator.max = questionslistHashmap.size
 
 
-        // initialize an list adapter
-        val answersList: ArrayList<String> = ArrayList()
-        val adapter = AnswersListAdapter(
-            this@QuizPage,
-            R.layout.widget_list_item, answersList
-        )
-
-        binding.answersList.adapter = adapter
-        quizPageData.adapter = adapter // save it to the data model
-
         // initilize list itemlistener
 
-        binding.answersList.onItemClickListener = ListListener(
-            this@QuizPage,
-            quizPageData,
-            this@QuizPage,
-            dialogProgress
-        )
+
+//binding.answersRecyclerView.
+//        binding.answersList.onItemClickListener = ListListener(
+//            this@QuizPage,
+//            quizPageData,
+//            this@QuizPage,
+//            dialogProgress
+//        )
 
         // first initialization of the questionsData
         QuestionDataInitializer(

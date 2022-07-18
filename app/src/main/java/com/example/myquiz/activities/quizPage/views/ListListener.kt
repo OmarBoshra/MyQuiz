@@ -1,6 +1,5 @@
 package com.example.myquiz.activities.quizPage.views
 
-import android.app.Activity
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -12,7 +11,6 @@ import com.example.myquiz.R
 import com.example.myquiz.activities.quizPage.QuizPage
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.QuizUIListener
-import com.example.myquiz.models.Question
 import com.example.myquiz.models.QuizPageData
 
 class ListListener(
@@ -41,7 +39,14 @@ class ListListener(
 
             val answerResult: Boolean
 
+            // to get the correct answer index
+            var correctAnswerIndex = 0
+            answersList.forEachIndexed { index, element ->
 
+                if(element.answer== answersHashMap!![correctAnswer])
+                    correctAnswerIndex = index
+                return
+            }
 
             if (item.toString() == answersHashMap!![correctAnswer]) {
                 Toast.makeText(
@@ -57,14 +62,16 @@ class ListListener(
                     )
                 )
             } else {
+
                 Toast.makeText(
                     context.applicationContext,
                     "InCorrect answer",
                     Toast.LENGTH_SHORT
                 ).show()
                 view!!.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+
                 answersList.let {
-                    parent.getChildAt(it.indexOf(answersHashMap[correctAnswer]))
+                    parent.getChildAt(correctAnswerIndex)
                         .setBackgroundColor(
                             ContextCompat.getColor(
                                 context,
@@ -99,7 +106,7 @@ class ListListener(
                     AppCompatResources.getDrawable(context, R.drawable.button_default)
 
 
-                parent.getChildAt(answersList.indexOf(answersHashMap[correctAnswer])).background =
+                parent.getChildAt(correctAnswerIndex).background =
                     AppCompatResources.getDrawable(context, R.drawable.button_default)
 
 
@@ -116,5 +123,9 @@ class ListListener(
         }
 
 
+    }
+
+    fun onItemClick(parent: Int) {
+        Toast.makeText(context, "ok", Toast.LENGTH_SHORT).show()
     }
 }

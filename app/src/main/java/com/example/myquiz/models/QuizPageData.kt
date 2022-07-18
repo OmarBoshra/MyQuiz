@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import com.example.myquiz.activities.quizPage.adapters.AnswersListAdapter
+import com.example.myquiz.activities.quizPage.adapters.RecyclerViewAdapter
 import java.util.HashMap
 
 data class QuizPageData(
@@ -11,12 +12,12 @@ data class QuizPageData(
 
     // for the listViewListner
     var correctAnswer: String = "",
-    var answersList: ArrayList<String> = arrayListOf(),
+    var answersList: ArrayList<RecyclerData> = arrayListOf(),
     var answersHashMap: HashMap<String, String>? = null,
     var questionTimer: Handler = Handler(Looper.getMainLooper()),
 
     // for the QuestionDataInitializer
-    var adapter: AnswersListAdapter? = null,
+    var adapter: RecyclerViewAdapter? = null,
     var answerResult: Boolean? = null,
 
 

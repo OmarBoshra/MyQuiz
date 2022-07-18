@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
+import androidx.lifecycle.viewmodel.savedstate.R
 import com.example.myquiz.activities.quizPage.HighscoreSaver
 import com.example.myquiz.activities.quizPage.QuizPage
 import com.example.myquiz.customWidgets.Check24ProgressBar
@@ -12,6 +13,7 @@ import com.example.myquiz.interfaces.QuizUIListener
 
 import com.example.myquiz.models.Question
 import com.example.myquiz.models.QuizPageData
+import com.example.myquiz.models.RecyclerData
 import java.net.URL
 import java.util.HashMap
 import java.util.concurrent.Executors
@@ -31,7 +33,7 @@ class QuestionDataInitializer(
         totalScore: Int,
         answersHashMap: HashMap<String, String>,
         correctAnswer: String,
-        answersList: ArrayList<String>
+        answersList: ArrayList<RecyclerData>
     ) {
 
         quizPageData.currentQuestionIndex = currentQuestionIndex
@@ -62,7 +64,7 @@ class QuestionDataInitializer(
         val islastQuestion: Boolean
         val answersHashMap: HashMap<String, String>
         val correctAnswer: String
-        val answersList: ArrayList<String>
+        val answersList = ArrayList<RecyclerData>()
 
         // gets and returns for itself
         var currentQuestionIndex = quizPageData.currentQuestionIndex
@@ -96,14 +98,16 @@ class QuestionDataInitializer(
 
             answersHashMap = questionslist[currentQuestionIndex].answers!!
 
-            answersList = ArrayList(answersHashMap.values.toList())
-
+            answersHashMap.forEach{
+                answersList.add(RecyclerData(it.value))
+            }
 
             answersList.shuffle()
 
-
-            adapter!!.addItems(answersList)
+            adapter!!.setUpdatedData(answersList)
             adapter.notifyDataSetChanged()
+//            adapter!!.addItems(answersList)
+//            adapter.notifyDataSetChanged()
 
 
             // change the header
