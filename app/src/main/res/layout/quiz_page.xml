@@ -8,6 +8,7 @@
     android:gravity="top"
     android:orientation="vertical">
 
+
     <TextView
         android:id="@+id/question_indicator"
         android:layout_width="match_parent"
@@ -19,6 +20,17 @@
 
         android:text="Frage 1/10 - Aktuelle Punktzahl: 300" />
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+
+        android:id="@+id/progres_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/basic_margin"
+        app:indicatorColor="@color/red"
+        app:trackColor="@color/check24_SecondaryColor"
+
+        />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/question_card"
@@ -58,17 +70,29 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-    <ListView
-        android:id="@+id/answers_list"
+<!--    <ListView-->
+<!--        android:id="@+id/answers_list"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="@dimen/basic_margin"-->
+<!--        android:contentDescription="@string/answers"-->
+<!--        tools:listitem="@android:layout/list_content"-->
+
+<!--        android:listSelector="@android:drawable/list_selector_background"-->
+
+<!--        />-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/answersRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/basic_margin"
-        android:contentDescription="@string/answers"
-        tools:listitem="@android:layout/list_content"
-
-        android:listSelector="@android:drawable/list_selector_background"
-
-        />
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="@dimen/basic_margin"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>
