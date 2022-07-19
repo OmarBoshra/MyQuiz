@@ -1,46 +1,31 @@
 package com.example.myquiz.activities.quizPage
 
-import android.content.*
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.myquiz.QuizApplication
-import com.example.myquiz.R
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myquiz.activities.MainActivity
-import com.example.myquiz.activities.quizPage.adapters.AnswersListAdapter
 import com.example.myquiz.activities.quizPage.adapters.RecyclerViewAdapter
 import com.example.myquiz.activities.quizPage.views.ListListener
 import com.example.myquiz.activities.quizPage.views.QuestionDataInitializer
-import com.example.myquiz.databinding.QuizPageBinding
 import com.example.myquiz.customWidgets.Check24ProgressBar
-import com.example.myquiz.interfaces.ApiInterface
+import com.example.myquiz.databinding.QuizPageBinding
 import com.example.myquiz.interfaces.QuizUIListener
-import com.example.myquiz.models.*
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.reflect.Type
+import com.example.myquiz.models.Question
+import com.example.myquiz.models.QuizPageData
+import com.example.myquiz.models.QuizPageViewModel
 
 
 class QuizPage : AppCompatActivity(), QuizUIListener {
 
     private lateinit var binding: QuizPageBinding
 
-    var questionslistHashmap = hashMapOf<String, Question>()
+    var questionslistHashmap: LinkedHashMap<String, Question> = LinkedHashMap()
 
     private lateinit var dialogProgress: Check24ProgressBar
 
@@ -49,45 +34,50 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
     private lateinit var quizPageViewModel: QuizPageViewModel
 
-    private fun initViewModel (){
-        quizPageViewModel = ViewModelProvider(this).get(QuizPageViewModel::class.java)
+    private fun initViewModel() {
+        quizPageViewModel = ViewModelProvider(this)[QuizPageViewModel::class.java]
 
         quizPageViewModel.liveDataList.observe(this) {
 
-                if( it!= null){
+            if (it != null) {
 
-                    it.question?.let { id ->
+                it.question?.let { id ->
 
-                        // here the question was considered to be the id but ofcourse in reality this would not be the case
-                        questionslistHashmap.put(id,it)
+                    // here the question was considered to be the id but ofcourse in reality this would not be the case
+                    questionslistHashmap[id] = it
 
-                        QuestionDataInitializer(
-                            this@QuizPage, this@QuizPage,
-                            true,quizPageData, dialogProgress
-                        )
+                    QuestionDataInitializer(
+                        this@QuizPage, this@QuizPage,
+                        true, quizPageData, dialogProgress
+                    )
 
-                    }
-
-                }else {
-                    Toast.makeText(this@QuizPage, "error in getting data", Toast.LENGTH_SHORT)
-                        .show()
                 }
 
+            } else {
+                Toast.makeText(this@QuizPage, "error in getting data", Toast.LENGTH_SHORT)
+                    .show()
             }
+
+        }
         quizPageViewModel.makeAPiCall()
     }
 
-    private fun iniRecyclerView (){
+    private fun iniRecyclerView() {
 
         // initilaize recycler view
         recyclerViewAdapter = RecyclerViewAdapter()
         binding.answersRecyclerView.adapter = recyclerViewAdapter
-        recyclerViewAdapter.setOnItemClickListener(ListListener(this@QuizPage,
-            quizPageData,
-            this@QuizPage,
-            dialogProgress))
+        recyclerViewAdapter.setOnItemClickListener(
+            ListListener(
+                this@QuizPage,
+                quizPageData,
+                this@QuizPage,
+                dialogProgress
+            )
+        )
 
-        quizPageData.adapter =recyclerViewAdapter
+        quizPageData.adapter = recyclerViewAdapter
+
     }
 
 
@@ -106,32 +96,16 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         receiveQuizData()
 
         iniRecyclerView()
-        initViewModel ()
+        initViewModel()
 
     }
 
     private fun receiveQuizData() {
 
-
-        //initialize progress indicator
-        binding.progresIndicator.max = questionslistHashmap.size
-
-
-        // initilize list itemlistener
-
-
-//binding.answersRecyclerView.
-//        binding.answersList.onItemClickListener = ListListener(
-//            this@QuizPage,
-//            quizPageData,
-//            this@QuizPage,
-//            dialogProgress
-//        )
-
         // first initialization of the questionsData
         QuestionDataInitializer(
             this@QuizPage, this@QuizPage,
-             false,quizPageData, dialogProgress
+            false, quizPageData, dialogProgress
         )
     }
 
@@ -143,7 +117,9 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         quizPageData: QuizPageData
     ) {
 
-// set the question image
+        //initialize progress indicator
+        binding.progresIndicator.max = questionslistHashmap.size
+        // set the question image
         binding.questionImage.setImageBitmap(null)
         binding.questionImage.setImageBitmap(quizPageData.questionImageBitMap)
         // set the quizheader
@@ -194,7 +170,7 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
         } else {
 
             val questionslist = ArrayList(questionslistHashmap.values)
-            if(questionslist.size>0) {
+            if (questionslist.size > 0) {
                 val questionScore = questionslist[quizPageData.currentQuestionIndex].score!!
                 val totalQuestions = questionslist.size
                 val question = questionslist[quizPageData.currentQuestionIndex].question

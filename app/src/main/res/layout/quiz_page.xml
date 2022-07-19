@@ -13,12 +13,12 @@
         android:id="@+id/question_indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/check24_MainColor"
         android:background="@color/white"
-        android:textStyle="bold"
         android:gravity="center"
+        android:text="Frage 1/10 - Aktuelle Punktzahl: 300"
+        android:textColor="@color/check24_MainColor"
 
-        android:text="Frage 1/10 - Aktuelle Punktzahl: 300" />
+        android:textStyle="bold" />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
 
@@ -36,20 +36,20 @@
         android:id="@+id/question_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/basic_margin"
         android:background="@color/white"
         android:gravity="center"
-        android:layout_margin="@dimen/basic_margin"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/number_of_points"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/green"
-            android:gravity="center"
-            android:textStyle="bold"
             android:layout_margin="@dimen/basic_margin"
-            android:text="100 Punkte" />
+            android:gravity="center"
+            android:text="100 Punkte"
+            android:textColor="@color/green"
+            android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/question_image"
@@ -61,26 +61,25 @@
             android:id="@+id/question"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
             android:layout_margin="@dimen/basic_margin"
-            android:textStyle="bold"
-            android:text="Wo befindet sich der CHECK24 hauptsitz?" />
+            android:text="Wo befindet sich der CHECK24 hauptsitz?"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-<!--    <ListView-->
-<!--        android:id="@+id/answers_list"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="@dimen/basic_margin"-->
-<!--        android:contentDescription="@string/answers"-->
-<!--        tools:listitem="@android:layout/list_content"-->
+<!--        <ListView-->
+<!--            android:id="@+id/answers_list"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="@dimen/basic_margin"-->
+<!--            android:contentDescription="@string/answers"-->
+<!--            tools:listitem="@android:layout/list_content"-->
 
-<!--        android:listSelector="@android:drawable/list_selector_background"-->
 
-<!--        />-->
+<!--            />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/answersRecyclerView"
@@ -88,10 +87,12 @@
         android:layout_height="match_parent"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+
         android:padding="@dimen/basic_margin"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 

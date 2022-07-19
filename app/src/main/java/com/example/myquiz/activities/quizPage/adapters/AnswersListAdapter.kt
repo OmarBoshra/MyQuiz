@@ -3,7 +3,11 @@ package com.example.myquiz.activities.quizPage.adapters
 import android.content.Context
 import android.widget.ArrayAdapter
 
-class AnswersListAdapter(context: Context, resource: Int, var answerslist: ArrayList<String>) :
+class AnswersListAdapter(
+    context: Context,
+    resource: Int,
+    private var answerslist: ArrayList<String>
+) :
     ArrayAdapter<String>(context, resource, answerslist) {
 
 

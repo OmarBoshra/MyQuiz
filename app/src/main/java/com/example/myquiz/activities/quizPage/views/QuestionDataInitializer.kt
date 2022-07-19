@@ -1,28 +1,23 @@
 package com.example.myquiz.activities.quizPage.views
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.viewmodel.savedstate.R
 import com.example.myquiz.activities.quizPage.HighscoreSaver
 import com.example.myquiz.activities.quizPage.QuizPage
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.QuizUIListener
-
-import com.example.myquiz.models.Question
 import com.example.myquiz.models.QuizPageData
 import com.example.myquiz.models.RecyclerData
 import java.net.URL
-import java.util.HashMap
 import java.util.concurrent.Executors
 
 
 class QuestionDataInitializer(
     private var QuizDataInterface: QuizUIListener,
     context: QuizPage,
-    isFromViewModel:Boolean ,
+    isFromViewModel: Boolean,
     private var quizPageData: QuizPageData,
     dialogProgress: Check24ProgressBar
 ) {
@@ -42,8 +37,6 @@ class QuestionDataInitializer(
         quizPageData.answersHashMap = answersHashMap
         quizPageData.correctAnswer = correctAnswer
         quizPageData.answersList = answersList
-
-
 
 
     }
@@ -80,47 +73,79 @@ class QuestionDataInitializer(
 
 
         questionTimer.removeCallbacksAndMessages(null)
-        if (questionslist.size>0) {
+        if (questionslist.size > 0) {
 
             // next question counter
-            if(isFromViewModel == false)
-              currentQuestionIndex++
+            if (!isFromViewModel)
+                currentQuestionIndex++
 
 
-        // check if the next question is still not the last question
-        if (currentQuestionIndex < questionslist.size) {
+            // check if the next question is still not the last question
+            if (currentQuestionIndex < questionslist.size) {
 
 //         quizPageData.answersList = ArrayList()
-            // update progress indicator
+                // update progress indicator
 
-            // show the new answers for the next question
+                // show the new answers for the next question
 
 
-            answersHashMap = questionslist[currentQuestionIndex].answers!!
+                answersHashMap = questionslist[currentQuestionIndex].answers!!
 
-            answersHashMap.forEach{
-                answersList.add(RecyclerData(it.value))
-            }
+                answersHashMap.forEach {
+                    answersList.add(RecyclerData(it.value))
+                }
 
-            answersList.shuffle()
+                answersList.shuffle()
 
-            adapter!!.setUpdatedData(answersList)
-            adapter.notifyDataSetChanged()
+                adapter!!.setUpdatedData(answersList)
+                adapter.notifyDataSetChanged()
 //            adapter!!.addItems(answersList)
 //            adapter.notifyDataSetChanged()
 
 
-            // change the header
-            if (answerResult == true)
-                totalScore += (
-                        questionslist[currentQuestionIndex - 1].score!!
+                // change the header
+                if (answerResult == true)
+                    totalScore += (
+                            questionslist[currentQuestionIndex - 1].score!!
+                            )
+
+                correctAnswer = questionslist[currentQuestionIndex].correctAnswer!!
+
+                questionslist[currentQuestionIndex].questionImageUrl?.let {
+
+                    if (it == ("null")) {
+                        quizPageData.questionImageBitMap = null
+                        dialogProgress.dismiss()
+                        returnsSetter(
+                            currentQuestionIndex,
+                            totalScore,
+                            answersHashMap,
+                            correctAnswer,
+                            answersList
                         )
+                        questionData()
 
-            correctAnswer = questionslist[currentQuestionIndex].correctAnswer!!
+                    } else {
 
-            questionslist[currentQuestionIndex].questionImageUrl?.let {
+                        downloadImageFromInternet(
+                            it,
+                            dialogProgress
+                        ) {
+                            dialogProgress.dismiss()
+                            returnsSetter(
+                                currentQuestionIndex,
+                                totalScore,
+                                answersHashMap,
+                                correctAnswer,
+                                answersList
+                            )
+                            questionData()
 
-                if (it == ("null")) {
+                        }
+
+                    }
+
+                } ?: kotlin.run {
                     quizPageData.questionImageBitMap = null
                     dialogProgress.dismiss()
                     returnsSetter(
@@ -132,50 +157,18 @@ class QuestionDataInitializer(
                     )
                     questionData()
 
-                } else {
-
-                    downloadImageFromInternet(
-                        it,
-                        dialogProgress
-                    ) {
-                        dialogProgress.dismiss()
-                        returnsSetter(
-                            currentQuestionIndex,
-                            totalScore,
-                            answersHashMap,
-                            correctAnswer,
-                            answersList
-                        )
-                        questionData()
-
-                    }
-
                 }
-
-            } ?: kotlin.run {
-                quizPageData.questionImageBitMap = null
-                dialogProgress.dismiss()
-                returnsSetter(
-                    currentQuestionIndex,
-                    totalScore,
-                    answersHashMap,
-                    correctAnswer,
-                    answersList
-                )
-                questionData()
-
-            }
 
 
 // if the user is at the last question
-        }
+            }
 
 
-        if (currentQuestionIndex == questionslist.size) {
+            if (currentQuestionIndex == questionslist.size) {
 
 
-            HighscoreSaver(context, totalScore)
-            dialogProgress.dismiss()
+                HighscoreSaver(context, totalScore)
+                dialogProgress.dismiss()
 
 
                 islastQuestion = true
@@ -183,26 +176,26 @@ class QuestionDataInitializer(
 
 
 
-            questionData()
-        } else {
+                questionData()
+            } else {
 
 
-            val questionTimer = Handler(Looper.getMainLooper())
-            questionTimer.postDelayed({
+                val questionTimer = Handler(Looper.getMainLooper())
+                questionTimer.postDelayed({
 
-                quizPageData.answerResult = false
+                    quizPageData.answerResult = false
 
-                QuestionDataInitializer(
-                    QuizDataInterface, context,
-                    false,quizPageData, dialogProgress
-                )
+                    QuestionDataInitializer(
+                        QuizDataInterface, context,
+                        false, quizPageData, dialogProgress
+                    )
 
-            }, 10000)
+                }, 10000)
 
-            quizPageData.questionTimer = questionTimer
+                quizPageData.questionTimer = questionTimer
 
 
-        }
+            }
         }
 
 

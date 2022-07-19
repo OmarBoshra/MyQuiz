@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../layout/custom_preview.xml" value="0.19635416666666666" />
+        <entry key="../Library/Android/sdk/platforms/android-32/data/res/drawable/list_selector_background.xml" value="0.189" />
+        <entry key="app/src/main/res/drawable-anydpi/button_false.xml" value="0.256" />
         <entry key="app/src/main/res/drawable-anydpi/check24_logo.xml" value="0.34" />
         <entry key="app/src/main/res/drawable-anydpi/false_button.xml" value="0.34" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.34" />
@@ -17,6 +19,7 @@
         <entry key="app/src/main/res/layout/progress.xml" value="0.16927083333333334" />
         <entry key="app/src/main/res/layout/question_answer.xml" value="0.29981884057971014" />
         <entry key="app/src/main/res/layout/quiz_page.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/recycler_row.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/recycler_view.xml" value="0.24166666666666667" />
         <entry key="app/src/main/res/layout/recyclerview_rowitem.xml" value="0.2966485507246377" />
         <entry key="app/src/main/res/layout/widget_list_item.xml" value="0.1703125" />

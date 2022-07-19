@@ -6,7 +6,7 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component (modules = [RetroModule::class])
+@Component(modules = [RetroModule::class])
 interface RetroComponent {
 
     fun inject(quizPageViewModel: QuizPageViewModel)

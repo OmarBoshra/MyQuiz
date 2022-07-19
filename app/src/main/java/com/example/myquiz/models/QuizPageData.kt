@@ -3,9 +3,7 @@ package com.example.myquiz.models
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
-import com.example.myquiz.activities.quizPage.adapters.AnswersListAdapter
 import com.example.myquiz.activities.quizPage.adapters.RecyclerViewAdapter
-import java.util.HashMap
 
 data class QuizPageData(
 

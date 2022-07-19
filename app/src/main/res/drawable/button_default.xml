@@ -10,7 +10,7 @@
     <!--    </item>-->
     <item android:state_selected="true">
         <shape>
-            <solid android:color="@color/check24_SecondaryColor" />
+            <solid android:color="@color/AccentColor" />
             <corners android:radius="20dp" />
         </shape>
     </item>

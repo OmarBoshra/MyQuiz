@@ -4,6 +4,7 @@
     <color name="check24_MainColor">#005EA8</color>
     <color name="white">#FFFFFF</color>
     <color name="check24_SecondaryColor">#5DA3DC</color>
+    <color name="AccentColor">#30C5FF</color>
     <color name="green">#3BA427</color>
     <color name="red">#F44336</color>
 

@@ -1,85 +1,90 @@
 package com.example.myquiz.activities.quizPage.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myquiz.activities.quizPage.views.ListListener
-import com.example.myquiz.databinding.RecyclerviewRowitemBinding
+import com.example.myquiz.databinding.RecyclerRowBinding
 import com.example.myquiz.models.RecyclerData
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 
-class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.myViewHolder>() {
+class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
-   private var listData: ArrayList<RecyclerData>? = null
-   private lateinit var mListener: ListListener
+    private var listData: ArrayList<RecyclerData>? = null
+    private lateinit var mListener: ListListener
+    private lateinit var viewGroup: ViewGroup
 
-        fun setUpdatedData (listData: ArrayList<RecyclerData>){
-            this.listData = listData
+    private var selectedPos = RecyclerView.NO_POSITION
 
-        }
-
-        class myViewHolder (binding : RecyclerviewRowitemBinding, listener: ListListener): RecyclerView.ViewHolder(binding.root){
-            val textView = binding.recyclerTextView
-
-            fun bind(data: RecyclerData){// view the speicifed data on the recycler view
-                    textView.setText(data.answer)
-
-/*                Glide.with(imageView)
-                    .load(data.owner?.avatar_url)
-                    .apply(RequestOptions.centerCropTransform())
-                    .into(imageView)*/
-
-
-            }
-
-            init {
-                itemView.setOnClickListener{
-                    listener.onItemClick(adapterPosition)
-
-                }
-
-            }
-
+    fun setUpdatedData(listData: ArrayList<RecyclerData>) {
+        this.listData = listData
 
     }
 
-    interface onItemClickListener{
 
-        fun onItemClick(position:Int){
+    class MyViewHolder(
+        binding: RecyclerRowBinding,
+        listener: ListListener,
+        parent: ViewGroup
+    ) : RecyclerView.ViewHolder(binding.root) {
+        val buttonView = binding.recyclerButtonView
 
+        fun bind(data: RecyclerData) {// view the speicifed data on the recycler view
+            buttonView.text = data.answer
+        }
+
+        init {
+            buttonView.setOnClickListener {
+
+                listener.onItemClick(it, this, parent)
+
+            }
+//            buttonView.setOnTouchListener {v: View, m: MotionEvent ->
+//                listener.onTouch(v)
+//                true
+//            }
 
         }
-    }
 
-    fun setOnItemClickListener(listener: ListListener){
+
+    }
+// if I want to interface directly with the recycler view
+//    interface onItemClickListener{
+//
+//        fun onItemClick(position:Int){
+//
+//
+//        }
+//    }
+
+    fun setOnItemClickListener(listener: ListListener) {
 
         mListener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-       val binding = RecyclerviewRowitemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        viewGroup = parent
 
-
-
-        return myViewHolder(binding,mListener)
+        return MyViewHolder(binding, mListener, parent)
     }
 
-    override fun onBindViewHolder(holder: myViewHolder, position: Int) {
-            holder.bind(listData!!.get(position))
-
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(listData!![position])
+        holder.itemView.setSelected(selectedPos == position);
 
 
     }
 
     override fun getItemCount(): Int {
-        if(listData == null)
-            return 0
-        else return listData?.size!!
+        return if (listData == null)
+            0
+        else listData?.size!!
+
 
     }
-
 
 }

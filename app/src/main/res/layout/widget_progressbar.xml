@@ -12,20 +12,20 @@
         android:id="@+id/progress_circular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/basic_margin"
         android:background="@drawable/button_default"
         android:padding="@dimen/basic_margin"
-        android:layout_margin="@dimen/basic_margin"
         android:textColor="@android:color/black"
-        android:textStyle="bold"
 
-        android:layout_gravity="center" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="@string/Loading" />
+        android:text="@string/Loading"
+        android:textColor="@color/white" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

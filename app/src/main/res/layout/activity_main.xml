@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/check24_MainColor"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     tools:context=".activities.MainActivity">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -15,11 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
+        android:layout_margin="@dimen/basic_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="@dimen/basic_margin"
         app:srcCompat="@drawable/check24_biglogo" />
 
 
@@ -27,28 +27,28 @@
         android:id="@+id/quiz_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
         android:layout_margin="@dimen/basic_margin"
-        android:textStyle="bold"
-        android:text="Das Quiz" />
+        android:text="Das Quiz"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/highscore_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
         android:layout_margin="@dimen/basic_margin"
-        android:text="Highscore 500 Punkte" />
+        android:text="Highscore 500 Punkte"
+        android:textColor="@color/white" />
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:layout_margin="@dimen/basic_margin"
         android:id="@+id/start_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:layout_margin="@dimen/basic_margin"
         android:background="@color/check24_SecondaryColor"
-        android:text="@string/start_button" />
+        android:text="@string/start_button"
+        android:textColor="@color/white" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

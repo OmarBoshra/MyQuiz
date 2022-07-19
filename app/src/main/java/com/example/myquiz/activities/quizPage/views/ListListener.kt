@@ -3,12 +3,13 @@ package com.example.myquiz.activities.quizPage.views
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.AdapterView
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.example.myquiz.R
 import com.example.myquiz.activities.quizPage.QuizPage
+import com.example.myquiz.activities.quizPage.adapters.RecyclerViewAdapter
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.QuizUIListener
 import com.example.myquiz.models.QuizPageData
@@ -18,13 +19,16 @@ class ListListener(
     private var quizPageData: QuizPageData,
     val context: QuizPage,
     private val dialogProgress: Check24ProgressBar
-) :
-    AdapterView.OnItemClickListener {
+) {
 
-    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+    fun onItemClick(
+        pressedView: View?,
+        myViewHolder: RecyclerViewAdapter.MyViewHolder,
+        viewGroup: ViewGroup,
+    ) {
 
-        val item = parent?.getItemAtPosition(position)
-        if (parent!!.isPressed) {
+//        val item = parent?.getItemAtPosition(position)
+        if (pressedView!!.isPressed) {
 
             // gets
             val answersList = quizPageData.answersList
@@ -43,35 +47,34 @@ class ListListener(
             var correctAnswerIndex = 0
             answersList.forEachIndexed { index, element ->
 
-                if(element.answer== answersHashMap!![correctAnswer])
+                if (element.answer == answersHashMap!![correctAnswer])
                     correctAnswerIndex = index
-                return
+                return@forEachIndexed
             }
 
-            if (item.toString() == answersHashMap!![correctAnswer]) {
+            if (myViewHolder.buttonView.text == answersHashMap!![correctAnswer]) {
                 Toast.makeText(
                     context.applicationContext,
                     "Correct answer",
                     Toast.LENGTH_SHORT
                 ).show()
                 answerResult = true
-                view!!.setBackgroundColor(
+                myViewHolder.buttonView.setBackgroundColor(
                     ContextCompat.getColor(
                         context,
                         R.color.green
                     )
                 )
             } else {
-
                 Toast.makeText(
                     context.applicationContext,
                     "InCorrect answer",
                     Toast.LENGTH_SHORT
                 ).show()
-                view!!.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                myViewHolder.buttonView.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
 
                 answersList.let {
-                    parent.getChildAt(correctAnswerIndex)
+                    viewGroup.getChildAt(correctAnswerIndex)
                         .setBackgroundColor(
                             ContextCompat.getColor(
                                 context,
@@ -84,35 +87,25 @@ class ListListener(
 
             }
 
-
-            parent.isEnabled = false
-
+            viewGroup.isEnabled = false
 
             dialogProgress.setCancelable(false)
             dialogProgress.show()
 
-
-//
-//                    val timerobj  =Timers()
-//                    timerobj.questionWaitTimer()
-//
-
-
             Handler(Looper.getMainLooper()).postDelayed({
 
-                parent.isEnabled = true
+                viewGroup.isEnabled = true
 
-                view.background =
-                    AppCompatResources.getDrawable(context, R.drawable.button_default)
+                myViewHolder.buttonView.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
 
 
-                parent.getChildAt(correctAnswerIndex).background =
-                    AppCompatResources.getDrawable(context, R.drawable.button_default)
+
+                viewGroup.getChildAt(correctAnswerIndex).background = AppCompatResources.getDrawable(context, R.drawable.button_default)
 
 
                 QuestionDataInitializer(
                     QuizDataInterface, context,
-                    false,quizPageData, dialogProgress
+                    false, quizPageData, dialogProgress
                 )
 
             }, 2000)
@@ -125,7 +118,11 @@ class ListListener(
 
     }
 
-    fun onItemClick(parent: Int) {
-        Toast.makeText(context, "ok", Toast.LENGTH_SHORT).show()
-    }
+//    fun onTouch(button: View) {
+//        button.background = AppCompatResources.getDrawable(context, R.drawable.button_selected)
+//
+//    }
 }
+
+
+
