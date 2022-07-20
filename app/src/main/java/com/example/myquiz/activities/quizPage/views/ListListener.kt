@@ -28,7 +28,7 @@ class ListListener(
     ) {
 
 //        val item = parent?.getItemAtPosition(position)
-        if (pressedView!!.isPressed) {
+
 
             // gets
             val answersList = quizPageData.answersList
@@ -113,7 +113,13 @@ class ListListener(
             quizPageData.answerResult = answerResult
 
 
-        }
+
+
+
+    }
+
+    fun onTouch(v: View) {
+        v.background = AppCompatResources.getDrawable(context, R.drawable.button_selected)
 
 
     }

@@ -6,6 +6,7 @@
         <entry key="../../../layout/custom_preview.xml" value="0.19635416666666666" />
         <entry key="../Library/Android/sdk/platforms/android-32/data/res/drawable/list_selector_background.xml" value="0.189" />
         <entry key="app/src/main/res/drawable-anydpi/button_false.xml" value="0.256" />
+        <entry key="app/src/main/res/drawable-anydpi/button_selected.xml" value="0.291" />
         <entry key="app/src/main/res/drawable-anydpi/check24_logo.xml" value="0.34" />
         <entry key="app/src/main/res/drawable-anydpi/false_button.xml" value="0.34" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.34" />

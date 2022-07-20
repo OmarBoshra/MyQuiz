@@ -2,6 +2,7 @@ package com.example.myquiz.activities.quizPage.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -36,18 +37,17 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
         }
 
         init {
-            buttonView.setOnClickListener {
+            itemView.setOnClickListener {
 
                 listener.onItemClick(it, this, parent)
 
             }
-//            buttonView.setOnTouchListener {v: View, m: MotionEvent ->
-//                listener.onTouch(v)
-//                true
-//            }
+            buttonView.setOnTouchListener {v: View, m: MotionEvent ->
+                v.isSelected = m.action != MotionEvent.ACTION_UP
+                false
+            }
 
         }
-
 
     }
 // if I want to interface directly with the recycler view
@@ -74,7 +74,7 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(listData!![position])
-        holder.itemView.setSelected(selectedPos == position);
+        holder.itemView.isSelected = selectedPos == position
 
 
     }

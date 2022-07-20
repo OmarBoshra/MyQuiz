@@ -154,8 +154,6 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
 
 
     override fun callQuestionRenderer() {
-
-
         // checking last question and updating the quiz data
 
         val islastQuestion = quizPageData.islastQuestion
@@ -176,19 +174,9 @@ class QuizPage : AppCompatActivity(), QuizUIListener {
                 val question = questionslist[quizPageData.currentQuestionIndex].question
                 questionRenderer(question, questionScore, totalQuestions, quizPageData)
             }
-
         }
 
-
     }
-
-
-    // todo modulate the QuestionDatainitializer further and maybe add interface between it and quizpage activity
-    // todo add the timers without sending them extra data
-    // todo smoke test
-    // todo add workmanager API
-    // todo re inspect the code
-
 
 }
 

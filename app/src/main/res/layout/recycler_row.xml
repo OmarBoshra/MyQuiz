@@ -12,8 +12,5 @@
     android:padding="@dimen/basic_margin"
     android:text="TextView"
     app:shapeAppearanceOverlay="@style/leaf"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
 
     xmlns:android="http://schemas.android.com/apk/res/android" />
