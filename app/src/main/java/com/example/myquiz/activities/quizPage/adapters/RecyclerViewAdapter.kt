@@ -15,19 +15,17 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 
     private var listData: ArrayList<RecyclerData>? = null
     private lateinit var mListener: ListListener
+    private lateinit var mListener2: ()->Unit
     private lateinit var viewGroup: ViewGroup
-
-    private var selectedPos = RecyclerView.NO_POSITION
+    private var selectedItemPosition: Int? = 0
 
     fun setUpdatedData(listData: ArrayList<RecyclerData>) {
         this.listData = listData
-
     }
-
 
     class MyViewHolder(
         binding: RecyclerRowBinding,
-        listener: ListListener,
+        listener: ()->Unit,
         parent: ViewGroup
     ) : RecyclerView.ViewHolder(binding.root) {
         val buttonView = binding.recyclerButtonView
@@ -39,7 +37,7 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
         init {
             itemView.setOnClickListener {
 
-                listener.onItemClick(it, this, parent)
+                listener.invoke()
 
             }
             buttonView.setOnTouchListener {v: View, m: MotionEvent ->
@@ -64,19 +62,22 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
         mListener = listener
     }
 
+    fun geItemPosition(): Int? {
+
+        return selectedItemPosition
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
         val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         viewGroup = parent
 
-        return MyViewHolder(binding, mListener, parent)
+        return MyViewHolder(binding, mListener2, parent)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(listData!![position])
-        holder.itemView.isSelected = selectedPos == position
-
-
+        selectedItemPosition = position
     }
 
     override fun getItemCount(): Int {
@@ -85,6 +86,10 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
         else listData?.size!!
 
 
+    }
+
+    fun setOnItemClickListener2(function: () -> Unit) {
+        mListener2 = function
     }
 
 }

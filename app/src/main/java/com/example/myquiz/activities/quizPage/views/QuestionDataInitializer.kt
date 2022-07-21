@@ -1,76 +1,67 @@
 package com.example.myquiz.activities.quizPage.views
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+
+
 import android.os.Handler
 import android.os.Looper
-import com.example.myquiz.activities.quizPage.HighscoreSaver
-import com.example.myquiz.activities.quizPage.QuizPage
-import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.interfaces.QuizUIListener
-import com.example.myquiz.models.QuizPageData
-import com.example.myquiz.models.RecyclerData
-import java.net.URL
-import java.util.concurrent.Executors
-
+import com.example.myquiz.models.*
 
 class QuestionDataInitializer(
-    private var QuizDataInterface: QuizUIListener,
-    context: QuizPage,
+    private var questionslistHashmap: LinkedHashMap<String, Question>,
     isFromViewModel: Boolean,
-    private var quizPageData: QuizPageData,
-    dialogProgress: Check24ProgressBar
+    var answerResult: Boolean?
 ) {
 
+    private val quizPageUIData = QuizPageUIData()
+
+    /**
+     * Returns the information needed for the question
+     * @param  questionslistHashmap
+     * the list of questions from the viewmodel in hashmap form in order to prevent repetition of data and make data update possible.
+     * @param  isFromViewModel
+     *  weather the viewmodel called it or the ListListener , if from listListener then it will update the index else it will just update its data
+     * @return * quizPageUIData
+     */
 
     private fun returnsSetter(
         currentQuestionIndex: Int,
         totalScore: Int,
         answersHashMap: HashMap<String, String>,
         correctAnswer: String,
-        answersList: ArrayList<RecyclerData>
+        score: Int,
+        question: String,
+        numberOfQuestions:Int
     ) {
 
-        quizPageData.currentQuestionIndex = currentQuestionIndex
-        quizPageData.totalScore = totalScore
-
-        quizPageData.answersHashMap = answersHashMap
-        quizPageData.correctAnswer = correctAnswer
-        quizPageData.answersList = answersList
-
-
-    }
-
-    private fun questionData() {
-
-
-        QuizDataInterface.callQuestionRenderer()
+        quizPageUIData.question = question
+        quizPageUIData.currentQuestionIndex = currentQuestionIndex
+        quizPageUIData.score = score
+        quizPageUIData.totalScore = totalScore
+        quizPageUIData.answersHashMap = answersHashMap
+        quizPageUIData.correctAnswer = correctAnswer
+        quizPageUIData.numberOfQuestions = numberOfQuestions
 
 
     }
-
 
     init {
-
 
         //returns
         val islastQuestion: Boolean
         val answersHashMap: HashMap<String, String>
+        val score: Int
+        val question: String
         val correctAnswer: String
-        val answersList = ArrayList<RecyclerData>()
+        val numberOfQuestions: Int
 
         // gets and returns for itself
-        var currentQuestionIndex = quizPageData.currentQuestionIndex
-        var totalScore = quizPageData.totalScore
-        val questionTimer = quizPageData.questionTimer
-
-        // gets from listListener
-        val adapter = quizPageData.adapter
-        val answerResult = quizPageData.answerResult
+        var currentQuestionIndex = quizPageUIData.currentQuestionIndex
+        var totalScore = quizPageUIData.totalScore
+        val questionTimer = quizPageUIData.questionTimer
 
         // gets
-        val questionslist = ArrayList(context.questionslistHashmap.values)
-
+        val questionslist = ArrayList(questionslistHashmap.values)
 
         questionTimer.removeCallbacksAndMessages(null)
         if (questionslist.size > 0) {
@@ -83,25 +74,23 @@ class QuestionDataInitializer(
             // check if the next question is still not the last question
             if (currentQuestionIndex < questionslist.size) {
 
-//         quizPageData.answersList = ArrayList()
-                // update progress indicator
+
+                // show the next Question
+                question = questionslist[currentQuestionIndex].question!!
 
                 // show the new answers for the next question
-
-
                 answersHashMap = questionslist[currentQuestionIndex].answers!!
 
-                answersHashMap.forEach {
-                    answersList.add(RecyclerData(it.value))
-                }
+                // show the next Questions score
+                score = questionslist[currentQuestionIndex].score!!
 
-                answersList.shuffle()
+                // show the next Questions score
+                numberOfQuestions  = questionslistHashmap.size
 
-                adapter!!.setUpdatedData(answersList)
-                adapter.notifyDataSetChanged()
+
+// todo update via view model
 //            adapter!!.addItems(answersList)
 //            adapter.notifyDataSetChanged()
-
 
                 // change the header
                 if (answerResult == true)
@@ -111,140 +100,49 @@ class QuestionDataInitializer(
 
                 correctAnswer = questionslist[currentQuestionIndex].correctAnswer!!
 
+    /**
+     * To get the imageUrl and set it in QuizPageActivity using Glide
+     */
                 questionslist[currentQuestionIndex].questionImageUrl?.let {
-
-                    if (it == ("null")) {
-                        quizPageData.questionImageBitMap = null
-                        dialogProgress.dismiss()
-                        returnsSetter(
-                            currentQuestionIndex,
-                            totalScore,
-                            answersHashMap,
-                            correctAnswer,
-                            answersList
-                        )
-                        questionData()
-
-                    } else {
-
-                        downloadImageFromInternet(
-                            it,
-                            dialogProgress
-                        ) {
-                            dialogProgress.dismiss()
-                            returnsSetter(
-                                currentQuestionIndex,
-                                totalScore,
-                                answersHashMap,
-                                correctAnswer,
-                                answersList
-                            )
-                            questionData()
-
-                        }
-
-                    }
-
-                } ?: kotlin.run {
-                    quizPageData.questionImageBitMap = null
-                    dialogProgress.dismiss()
-                    returnsSetter(
-                        currentQuestionIndex,
-                        totalScore,
-                        answersHashMap,
-                        correctAnswer,
-                        answersList
-                    )
-                    questionData()
-
+                        quizPageUIData.questionImageUrl = it
                 }
-
-
-// if the user is at the last question
+                /*
+                Set All The Data To Be Returned
+                */
+                returnsSetter(
+                    currentQuestionIndex,
+                    totalScore,
+                    answersHashMap,
+                    correctAnswer,
+                    score,
+                    question,
+                    numberOfQuestions
+                )
             }
-
-
+            // if the user is at the last question
             if (currentQuestionIndex == questionslist.size) {
 
-
-                HighscoreSaver(context, totalScore)
-                dialogProgress.dismiss()
-
-
+                // todo make in the activity
+//                HighscoreSaver(context, totalScore)
                 islastQuestion = true
-                quizPageData.islastQuestion = islastQuestion
-
-
-
-                questionData()
+                quizPageUIData.islastQuestion = islastQuestion
             } else {
-
-
-                val questionTimer = Handler(Looper.getMainLooper())
-                questionTimer.postDelayed({
-
-                    quizPageData.answerResult = false
-
-                    QuestionDataInitializer(
-                        QuizDataInterface, context,
-                        false, quizPageData, dialogProgress
-                    )
-
-                }, 10000)
-
-                quizPageData.questionTimer = questionTimer
-
-
+//                val questionTimer = Handler(Looper.getMainLooper())
+//                questionTimer.postDelayed({
+//                 answerResult = false
+//
+//                    QuestionDataInitializer(
+//                        questionslistHashmap,
+//                        false ,false
+//                    )
+//                }, 10000)
+//                listListenerData.questionTimer = questionTimer
             }
         }
-
-
     }
 
-
-    private fun downloadImageFromInternet(
-        url: String,
-        dialogProgress: Check24ProgressBar,
-        callBack: () -> Unit
-    ) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        val handler = Handler(Looper.getMainLooper())
-
-
-        var imageBitMap: Bitmap?
-        executor.execute {
-
-            // Image URL
-
-            // Tries to get the image and post it in the ImageView
-            // with the help of Handler
-            try {
-                val `in` = URL(url).openStream()
-                imageBitMap = BitmapFactory.decodeStream(`in`)
-
-                // Only for making changes in UI
-                handler.post {
-
-                    dialogProgress.dismiss()
-                    quizPageData.questionImageBitMap = imageBitMap
-
-                    callBack.invoke()
-
-
-                }
-
-
-            }
-
-
-            // If the URL doesnot point to
-            // image or any other kind of failure
-            catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-
+    fun getUIData ():QuizPageUIData{
+        return quizPageUIData
     }
+
 }

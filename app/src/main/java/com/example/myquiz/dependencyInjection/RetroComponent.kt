@@ -1,4 +1,4 @@
-package com.example.myquiz.interfaces
+package com.example.myquiz.dependencyInjection
 
 import com.example.myquiz.dependencyInjection.RetroModule
 import com.example.myquiz.models.QuizPageViewModel
