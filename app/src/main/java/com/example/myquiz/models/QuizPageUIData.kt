@@ -15,7 +15,6 @@ class QuizPageUIData (
     var islastQuestion: Boolean = false,
     var correctAnswer: String = "",
     var answersHashMap: HashMap<String, String> = HashMap(),
-    var questionTimer: Handler = Handler(Looper.getMainLooper()),
     var numberOfQuestions:  Int = 0,
     var question: String? = null,
 

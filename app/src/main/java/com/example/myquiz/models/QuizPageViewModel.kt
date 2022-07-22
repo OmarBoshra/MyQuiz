@@ -14,7 +14,17 @@ import javax.inject.Inject
 
 class QuizPageViewModel(application: Application) : AndroidViewModel(application) {
     /**
-     * Service of the API injected within the directed acyclic graph
+     * ## QuizPageViewModel
+     * Manages __communication__  between Activity/itsfragments and Models within API or other data models , thus separating between the business logic and the UI
+     * @param  [mService] Service of the API injected within the directed acyclic graph
+     *
+     * @param  [liveDataForUI] Live data to be sent from the viewmodel
+     *
+     * @param  [questionslistHashmap] List of ordered questions which are sent to the QuestionDataInitializer
+     *
+     * @param  [quizPageData] the data needed to update UI
+     * @return  - liveDataForUI
+     *  - answerResult
      */
     @Inject
     lateinit var mService: ApiInterface
@@ -27,25 +37,22 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
      */
     var questionslistHashmap: LinkedHashMap<String, Question> = LinkedHashMap()
     /**
-     * Object to retrive the question data
+     * Date returned to update the UI and also gets manipulated by the UI back to the viewmodel
      */
-    var questionInitializerObj: QuestionDataInitializer? =null
-
+    var quizPageUIData = QuizPageUIData()
     init {
         /**
          * initialize the application class and inject to its dagger2 component the viewmodel
          */
         (application as QuizApplication).getRetroComponent().inject(this)
-
     }
     /**
-     * To get data from json
+     * ## makeAPiCall
+     * To __fetch__ data from [url](https://app.check24.de/vg2-quiz/quiz.json) and send it to the [QuizPageAactivity][com.example.myquiz.activities.quizPage.QuizPage]
+     * via [liveDataForUI]
      */
     fun makeAPiCall() {
         viewModelScope.launch{
-
-            var quizPageData: QuizPageUIData? = null
-
             val quizDataResponse = mService.getQuizData()
             if (quizDataResponse.isSuccessful) {
                 val responseBody = quizDataResponse.body()
@@ -55,11 +62,11 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
                             // here the question was considered to be the id but of course in reality this would not be the case
                             questionslistHashmap[id] = it
 
-                            quizPageData = QuestionDataInitializer(
+                            quizPageUIData = QuestionDataInitializer(
                                 questionslistHashmap,
-                                true,null).getUIData()
+                                true,quizPageUIData,null).quizPageUIData
 
-                            liveDataForUI.value = quizPageData
+                            liveDataForUI.value = quizPageUIData
 
                         }
                     }
@@ -69,8 +76,53 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+    /**
+     * ## onItemClick
+     * **Updates** the Business logic of the Click Listner then notifies the activity of the result
+     */
+    fun onItemClick(
+       answer : String
+    ) : MutableList<Any>
+    {
+        // returns
+        var answerResult:Boolean? = null
+        var correctanswer = ""
+        // to get the correct answer and index
+        var correctAnswerIndex = 0
+        val answersList = quizPageUIData.answersHashMap.values
+    // to find both the index and the correct answer itself
+        answersList.forEachIndexed { index, element ->
+            if (element == quizPageUIData.answersHashMap.get(quizPageUIData.correctAnswer)){
+                correctanswer = element
+                correctAnswerIndex = index
+            }
+            return@forEachIndexed
+        }
 
-    fun onItemClick(geItemPosition: Int?) {
+        if (answer == correctanswer) {
+            answerResult = true
+        } else {
+            answerResult = false
+        }
+        val answerData :MutableList<Any> = mutableListOf(answerResult,correctAnswerIndex)
+
+        return answerData
+    }
+/**
+* ## toNextQuestion
+ * for __rendering__ the next question
+ * - calls the [QuestionDataInitializer]
+ * - sets the new [liveDataForUI]
+ * @param answerResult
+ * the result of the previous answer so that the [QuestionDataInitializer] can know if its going to add the previous answer to the total score or no
+* */
+    fun toNextQuestion(answerResult: Boolean) {
+
+    quizPageUIData = QuestionDataInitializer(
+        questionslistHashmap,
+        false,quizPageUIData,answerResult).quizPageUIData
+
+    liveDataForUI.value = quizPageUIData
 
     }
 }

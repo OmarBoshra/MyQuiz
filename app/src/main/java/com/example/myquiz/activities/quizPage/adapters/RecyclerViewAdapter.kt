@@ -1,6 +1,6 @@
 package com.example.myquiz.activities.quizPage.adapters
 
-import android.graphics.Color
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -15,29 +15,31 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 
     private var listData: ArrayList<RecyclerData>? = null
     private lateinit var mListener: ListListener
-    private lateinit var mListener2: ()->Unit
-    private lateinit var viewGroup: ViewGroup
-    private var selectedItemPosition: Int? = 0
+    private lateinit var mListener2: (String,Int)->Unit
+
 
     fun setUpdatedData(listData: ArrayList<RecyclerData>) {
         this.listData = listData
     }
 
+
     class MyViewHolder(
         binding: RecyclerRowBinding,
-        listener: ()->Unit,
-        parent: ViewGroup
+        listener: (String,Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
+        var answer :String = ""
+
         val buttonView = binding.recyclerButtonView
 
         fun bind(data: RecyclerData) {// view the speicifed data on the recycler view
-            buttonView.text = data.answer
+            answer = data.answer
+            buttonView.text = answer
+
         }
 
         init {
-            itemView.setOnClickListener {
-
-                listener.invoke()
+            buttonView.setOnClickListener {
+                listener.invoke(answer,adapterPosition)
 
             }
             buttonView.setOnTouchListener {v: View, m: MotionEvent ->
@@ -57,27 +59,22 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 //        }
 //    }
 
+
+
     fun setOnItemClickListener(listener: ListListener) {
 
         mListener = listener
     }
 
-    fun geItemPosition(): Int? {
-
-        return selectedItemPosition
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
         val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        viewGroup = parent
 
-        return MyViewHolder(binding, mListener2, parent)
+        return MyViewHolder(binding, mListener2)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(listData!![position])
-        selectedItemPosition = position
     }
 
     override fun getItemCount(): Int {
@@ -88,7 +85,7 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 
     }
 
-    fun setOnItemClickListener2(function: () -> Unit) {
+    fun setOnItemClickListener2(function: (String,Int) -> Unit) {
         mListener2 = function
     }
 
