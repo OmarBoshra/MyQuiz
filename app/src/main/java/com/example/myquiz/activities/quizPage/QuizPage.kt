@@ -7,7 +7,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -42,7 +41,7 @@ class QuizPage : AppCompatActivity() {
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
     private lateinit var quizPageViewModel: QuizPageViewModel
     private lateinit var quizPageUIData: QuizPageUIData
-    private var questionTimer :Handler?=null
+    private var questionTimer: Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +59,13 @@ class QuizPage : AppCompatActivity() {
         initViewModel()
         iniRecyclerView()
     }
-/**
- * ## initViewModel
- * @since [liveDataForUI][com.example.myquiz.models.QuizPageViewModel.liveDataForUI] is observed
- * * initViewModel Observes the data that should come to the UI
- * * once the data arrives it reinitializes [iniRecyclerView] and [questionDataManager] with the new data
- * */
+
+    /**
+     * ## initViewModel
+     * @since [liveDataForUI][com.example.myquiz.models.QuizPageViewModel.liveDataForUI] is observed
+     * * initViewModel Observes the data that should come to the UI
+     * * once the data arrives it reinitializes [iniRecyclerView] and [questionDataManager] with the new data
+     * */
     private fun initViewModel() {
         quizPageViewModel = ViewModelProvider(this)[QuizPageViewModel::class.java]
         quizPageViewModel.liveDataForUI.observe(this) {
@@ -80,34 +80,36 @@ class QuizPage : AppCompatActivity() {
 
         quizPageViewModel.makeAPiCall()
     }
-/**
- * ## iniRecyclerView
- * * initializes the recyclerview
- * * initializes the recyclerview's listener which gets its data from the [QuizPageViewModel] [com.example.myquiz.models.QuizPageViewModel]
- * */
+
+    /**
+     * ## iniRecyclerView
+     * * initializes the recyclerview
+     * * initializes the recyclerview's listener which gets its data from the [QuizPageViewModel] [com.example.myquiz.models.QuizPageViewModel]
+     * */
     private fun iniRecyclerView() {
         // initialize recycler view and set both its adapter and listener
         recyclerViewAdapter = RecyclerViewAdapter()
         binding.answersRecyclerView.adapter = recyclerViewAdapter
 
-        recyclerViewAdapter.setOnItemClickListener2 { answer ,postion ->
+        recyclerViewAdapter.setOnItemClickListener2 { answer, postion ->
             // disable the timer
-            if (questionTimer !=null) {
+            if (questionTimer != null) {
                 questionTimer!!.removeCallbacksAndMessages(null)
                 questionTimer = null
             }
 
 
             val answerData = quizPageViewModel.onItemClick(answer)
-            val answerResult=  answerData.get(0)
-            val correctAnswerIndex= answerData.get(1)
+            val answerResult = answerData[0]
+            val correctAnswerIndex = answerData[1]
 
-           val selectedView = binding.answersRecyclerView.findViewHolderForAdapterPosition(postion)?.itemView
-           val correctAnswerView = binding.answersRecyclerView.findViewHolderForAdapterPosition(
-               correctAnswerIndex as Int
-           )?.itemView
+            val selectedView =
+                binding.answersRecyclerView.findViewHolderForAdapterPosition(postion)?.itemView
+            val correctAnswerView = binding.answersRecyclerView.findViewHolderForAdapterPosition(
+                correctAnswerIndex as Int
+            )?.itemView
 
-            if(answerResult as Boolean){
+            if (answerResult as Boolean) {
                 // if correct make sure row is green
                 selectedView?.setBackgroundColor(
                     ContextCompat.getColor(
@@ -124,14 +126,14 @@ class QuizPage : AppCompatActivity() {
                     )
                 )
                 correctAnswerView?.setBackgroundColor(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.green
-                        )
-                        )
+                    ContextCompat.getColor(
+                        this,
+                        R.color.green
+                    )
+                )
 
             }
-    // reinitialize the dialog
+            // reinitialize the dialog
             dialogProgress.show()
             Handler(Looper.getMainLooper()).postDelayed({
 
@@ -145,16 +147,17 @@ class QuizPage : AppCompatActivity() {
             }, 2000)
         }
     }
+
     /**
      * ## questionDataManager
      * * makes sure to save the highestScore using [HighscoreSaver] and navigate to [MainActivity][com.example.myquiz.activities.MainActivity] if its the last question
      * * else it calls [renderQuestion]
      * */
-     fun questionDataManager() {
+    private fun questionDataManager() {
         // checking last question and updating the quiz data
         val islastQuestion = quizPageUIData.islastQuestion
         if (islastQuestion) {
-          // save the highestscore
+            // save the highestscore
             HighscoreSaver(this, quizPageUIData.totalScore)
 
             val navigtionIntent = Intent(this@QuizPage, MainActivity::class.java)
@@ -166,7 +169,7 @@ class QuizPage : AppCompatActivity() {
             startActivity(navigtionIntent)
         } else {
 
-            if (quizPageUIData.numberOfQuestions> 0) {
+            if (quizPageUIData.numberOfQuestions > 0) {
                 val questionScore = quizPageUIData.score
                 val totalQuestions = quizPageUIData.numberOfQuestions
                 val question = quizPageUIData.question
@@ -174,6 +177,7 @@ class QuizPage : AppCompatActivity() {
             }
         }
     }
+
     /**
      * ### renderQuestion
      * * makes sure to render all the data that where recived from the viwmodel through the [quizPageUIData] object
@@ -190,7 +194,7 @@ class QuizPage : AppCompatActivity() {
 
         // set the question image
         binding.questionImage.setImageBitmap(null)
-        if(quizPageUIData.questionImageUrl != null) {
+        if (quizPageUIData.questionImageUrl != null) {
 
             Glide.with(binding.questionImage)
                 .load(quizPageUIData.questionImageUrl)
@@ -201,31 +205,28 @@ class QuizPage : AppCompatActivity() {
         /*
          Set The questionIndicator
          */
-
-        val questionIndicatorText: StringBuilder = StringBuilder()
-        questionIndicatorText.append("Frage ")
-        questionIndicatorText.append(quizPageUIData.currentQuestionIndex + 1)
-        questionIndicatorText.append("/")
-        questionIndicatorText.append(totalQuestions)
-        questionIndicatorText.append(" - Aktuelle Punktzahl: ")
-        questionIndicatorText.append(quizPageUIData.totalScore)
+        val questionIndicatorText = resources.getString(
+            R.string.QuestionIndicator,
+            quizPageUIData.currentQuestionIndex + 1,
+            totalQuestions,
+            quizPageUIData.totalScore
+        )
         binding.questionIndicator.text = questionIndicatorText
 
         // set the progressIndicator
         binding.progresIndicator.progress = quizPageUIData.currentQuestionIndex + 1
 
         // initialize the question score
-        val questionScoreText: StringBuilder = StringBuilder()
-        questionScoreText.append(questionScore)
-        questionScoreText.append(" Punkte")
+
+        val questionScoreText = resources.getString(R.string.Punkte, questionScore)
         binding.numberOfPoints.text = questionScoreText
 
         //initialize the question
         binding.question.text = question
 
-       /*
-       Update List of Answers
-       */
+        /*
+        Update List of Answers
+        */
         val answersList = quizPageUIData.answersHashMap.values
         val recyclerList = ArrayList<RecyclerData>()
         answersList.forEach {
@@ -236,18 +237,18 @@ class QuizPage : AppCompatActivity() {
 
         dialogProgress.dismiss()
 
-    if(questionTimer == null) {
-        questionTimer = Handler(Looper.getMainLooper())
-        questionTimer!!.postDelayed({
-            // cancel the timer in order to restart it
-            questionTimer!!.removeCallbacksAndMessages(null)
-            questionTimer = null
-            // reinitialize the dialog
-            dialogProgress.show()
-            // call the model again assuming that the answer is false
-            quizPageViewModel.toNextQuestion(false)
-        }, 10000)
-    }
+        if (questionTimer == null) {
+            questionTimer = Handler(Looper.getMainLooper())
+            questionTimer!!.postDelayed({
+                // cancel the timer in order to restart it
+                questionTimer!!.removeCallbacksAndMessages(null)
+                questionTimer = null
+                // reinitialize the dialog
+                dialogProgress.show()
+                // call the model again assuming that the answer is false
+                quizPageViewModel.toNextQuestion(false)
+            }, 10000)
+        }
 
     }
 

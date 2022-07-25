@@ -1,8 +1,6 @@
 package com.example.myquiz.activities.quizPage
 
-import android.content.Context
 import android.content.SharedPreferences
-import com.example.myquiz.models.QuizPageViewModel
 
 class HighscoreSaver(context: QuizPage, totalScore: Int) :
     SharedPreferences.OnSharedPreferenceChangeListener {

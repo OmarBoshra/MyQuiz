@@ -1,14 +1,13 @@
 package com.example.myquiz.activities.quizPage.views
 
 
-
 import com.example.myquiz.models.*
 
 class QuestionDataInitializer(
-    private var questionslistHashmap: LinkedHashMap<String, Question>,
+    questionslistHashmap: LinkedHashMap<String, Question>,
     isNextQuestion: Boolean,
-    var quizPageUIData:QuizPageUIData,
-    var answerResult: Boolean?
+    var quizPageUIData: QuizPageUIData,
+    answerResult: Boolean?
 ) {
     /**
      * Returns the information needed for the question
@@ -26,8 +25,8 @@ class QuestionDataInitializer(
         correctAnswer: String,
         score: Int,
         question: String,
-        numberOfQuestions:Int,
-        url:String?
+        numberOfQuestions: Int,
+        url: String?
     ) {
 
         quizPageUIData.question = question
@@ -50,7 +49,7 @@ class QuestionDataInitializer(
         val question: String
         val correctAnswer: String
         val numberOfQuestions: Int
-        var url: String?= null
+        var url: String? = null
 
         // gets and returns for itself
         var currentQuestionIndex = quizPageUIData.currentQuestionIndex
@@ -78,7 +77,7 @@ class QuestionDataInitializer(
                 score = questionslist[currentQuestionIndex].score!!
 
                 // show the next Questions score
-                numberOfQuestions  = questionslistHashmap.size
+                numberOfQuestions = questionslistHashmap.size
 
                 // change the header
                 if (answerResult == true)
@@ -87,11 +86,11 @@ class QuestionDataInitializer(
                             )
                 correctAnswer = questionslist[currentQuestionIndex].correctAnswer!!
 
-    /**
-     * To get the imageUrl and set it in QuizPageActivity using Glide
-     */
+                /**
+                 * To get the imageUrl and set it in QuizPageActivity using Glide
+                 */
                 questionslist[currentQuestionIndex].questionImageUrl?.let {
-                        url = it
+                    url = it
                 }
                 /*
                 Set All The Data To Be Returned

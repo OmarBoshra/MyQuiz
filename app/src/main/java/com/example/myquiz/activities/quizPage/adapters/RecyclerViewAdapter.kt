@@ -1,12 +1,10 @@
 package com.example.myquiz.activities.quizPage.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myquiz.activities.quizPage.views.ListListener
 import com.example.myquiz.databinding.RecyclerRowBinding
 import com.example.myquiz.models.RecyclerData
 
@@ -14,22 +12,20 @@ import com.example.myquiz.models.RecyclerData
 class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     private var listData: ArrayList<RecyclerData>? = null
-    private lateinit var mListener: ListListener
-    private lateinit var mListener2: (String,Int)->Unit
+    private lateinit var mListener2: (String, Int) -> Unit
 
 
     fun setUpdatedData(listData: ArrayList<RecyclerData>) {
         this.listData = listData
     }
 
-
     class MyViewHolder(
         binding: RecyclerRowBinding,
-        listener: (String,Int) -> Unit
+        listener: (String, Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-        var answer :String = ""
+        private var answer: String = ""
 
-        val buttonView = binding.recyclerButtonView
+        private val buttonView = binding.recyclerButtonView
 
         fun bind(data: RecyclerData) {// view the speicifed data on the recycler view
             answer = data.answer
@@ -39,10 +35,10 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 
         init {
             buttonView.setOnClickListener {
-                listener.invoke(answer,adapterPosition)
+                listener.invoke(answer, adapterPosition)
 
             }
-            buttonView.setOnTouchListener {v: View, m: MotionEvent ->
+            buttonView.setOnTouchListener { v: View, m: MotionEvent ->
                 v.isSelected = m.action != MotionEvent.ACTION_UP
                 false
             }
@@ -59,17 +55,8 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
 //        }
 //    }
 
-
-
-    fun setOnItemClickListener(listener: ListListener) {
-
-        mListener = listener
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-
         val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
         return MyViewHolder(binding, mListener2)
     }
 
@@ -81,11 +68,9 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolde
         return if (listData == null)
             0
         else listData?.size!!
-
-
     }
 
-    fun setOnItemClickListener2(function: (String,Int) -> Unit) {
+    fun setOnItemClickListener2(function: (String, Int) -> Unit) {
         mListener2 = function
     }
 

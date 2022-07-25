@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<Button xmlns:app="http://schemas.android.com/apk/res-auto"
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recyclerButtonView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/basic_margin"
     android:layout_weight="1"
     android:background="@drawable/button_default"
-    app:backgroundTint="@null"
     android:gravity="center"
     android:padding="@dimen/basic_margin"
     android:text="TextView"
-    app:shapeAppearanceOverlay="@style/leaf"
+    app:backgroundTint="@null"
 
-    xmlns:android="http://schemas.android.com/apk/res/android" />
+    app:shapeAppearanceOverlay="@style/leaf" />

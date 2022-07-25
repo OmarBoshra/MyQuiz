@@ -2,8 +2,8 @@ package com.example.myquiz
 
 import android.app.Application
 import com.example.myquiz.dependencyInjection.DaggerRetroComponent
-import com.example.myquiz.dependencyInjection.RetroModule
 import com.example.myquiz.dependencyInjection.RetroComponent
+import com.example.myquiz.dependencyInjection.RetroModule
 
 class QuizApplication : Application() {
 

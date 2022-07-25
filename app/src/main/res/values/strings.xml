@@ -8,8 +8,8 @@
     <string name="Loading">"Loading.."</string>
 
     <string name="highscore">HighScore: %d</string>
-    <string name="QuestionIndicator">Frage %d / %d  - Aktuelle Punktzahl: %d</string>
-
+    <string name="Punkte">%d Punkte:</string>
+    <string name="QuestionIndicator">Frage %1$d / %2$d  - Aktuelle Punktzahl: %3$d</string>
 
 
     <string-array name="answer_letters">

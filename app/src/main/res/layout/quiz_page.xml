@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -70,31 +72,18 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-<!--        <ListView-->
-<!--            android:id="@+id/answers_list"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="@dimen/basic_margin"-->
-<!--            android:contentDescription="@string/answers"-->
-<!--            tools:listitem="@android:layout/list_content"-->
-
-
-<!--            />-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/answersRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
-
         android:padding="@dimen/basic_margin"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>
+
