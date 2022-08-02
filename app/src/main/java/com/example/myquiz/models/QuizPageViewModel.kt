@@ -69,7 +69,7 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
 
                             quizPageUIData = QuestionDataInitializer(
                                 questionslistHashmap,
-                                true, quizPageUIData, null
+                                false, quizPageUIData, null
                             ).quizPageUIData
 
                             liveDataForUI.value = quizPageUIData
@@ -122,10 +122,29 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
 
         quizPageUIData = QuestionDataInitializer(
             questionslistHashmap,
-            false, quizPageUIData, answerResult
+            true, quizPageUIData, answerResult
         ).quizPageUIData
 
         liveDataForUI.value = quizPageUIData
+
+    }
+
+    // to update the index after going to the next fragment
+    fun updateQuestionIndex(currentpostionofFragment: Int) {
+
+        if(quizPageUIData.currentQuestionIndex  < currentpostionofFragment){
+            toNextQuestion(false)
+        }else {
+            quizPageUIData.currentQuestionIndex = currentpostionofFragment
+            quizPageUIData = QuestionDataInitializer(
+                questionslistHashmap,
+                false, quizPageUIData, null
+            ).quizPageUIData
+
+            liveDataForUI.value = quizPageUIData
+
+        }
+
 
     }
 }

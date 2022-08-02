@@ -61,7 +61,7 @@ class QuestionDataInitializer(
         if (questionslist.size > 0) {
 
             // next question counter
-            if (!isNextQuestion)
+            if (isNextQuestion)
                 currentQuestionIndex++
 
             // check if the next question is still not the last question

@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -47,6 +46,9 @@ class quizfragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+
+    private var currentpostionofFragment = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -65,12 +67,13 @@ class quizfragment : Fragment() {
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
     private lateinit var quizPageViewModel: QuizPageViewModel
     private lateinit var quizPageUIData: QuizPageUIData
+
     private var questionTimer: Handler? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
             /**
              * # quizFragment
@@ -86,26 +89,11 @@ class quizfragment : Fragment() {
              * */
 
 
-
-                // initialize the UI binding
-                binding = FragmentQuizfragmentBinding.inflate(layoutInflater)
-
-
-                // initiate progress dialogue
-                dialogProgress = Check24ProgressBar(requireActivity())
-                dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                dialogProgress.setCancelable(false)
-                dialogProgress.show()
-
-        if(activity!=null) {
-            initViewModel()
-            iniRecyclerView()
-        }
+        // initialize the UI binding
+        binding = FragmentQuizfragmentBinding.inflate(layoutInflater)
 
 
-
-
-        return inflater.inflate(R.layout.fragment_quizfragment, container, false)
+        return binding.root
     }
 
     companion object {
@@ -128,6 +116,35 @@ class quizfragment : Fragment() {
             }
     }
 
+    override fun onResume() {
+
+        // disable the timer
+        if (questionTimer != null) {
+            questionTimer!!.removeCallbacksAndMessages(null)
+            questionTimer = null
+        }
+        // update the fragments number
+        currentpostionofFragment= (activity as QuizPage).adapter.currentposition
+        quizPageViewModel.updateQuestionIndex(currentpostionofFragment)
+
+        super.onResume()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        // initiate progress dialogue
+        dialogProgress = Check24ProgressBar(requireActivity())
+        dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogProgress.setCancelable(false)
+        dialogProgress.show()
+
+        if(activity!=null) {
+            initViewModel()
+            iniRecyclerView()
+        }
+
+        super.onViewCreated(view, savedInstanceState)
+    }
 
 
     /**
@@ -138,13 +155,17 @@ class quizfragment : Fragment() {
      * */
     private fun initViewModel() {
         quizPageViewModel = ViewModelProvider(this)[QuizPageViewModel::class.java]
+
         quizPageViewModel.liveDataForUI.observe(requireActivity()) {
             if (it == null) {
                 Toast.makeText(requireActivity(), "error in getting data", Toast.LENGTH_SHORT)
                     .show()
             } else {
+
                 quizPageUIData = it
-                questionDataManager()
+                (activity as QuizPage).adapter.numberOfFragments =quizPageUIData.numberOfQuestions
+
+                    questionDataManager()
             }
         }
 
@@ -167,7 +188,6 @@ class quizfragment : Fragment() {
                 questionTimer!!.removeCallbacksAndMessages(null)
                 questionTimer = null
             }
-
 
             val answerData = quizPageViewModel.onItemClick(answer)
             val answerResult = answerData[0]
