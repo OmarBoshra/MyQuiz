@@ -1,5 +1,6 @@
 package com.example.myquiz.activities.quizPage
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -8,14 +9,14 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.myquiz.R
@@ -23,11 +24,6 @@ import com.example.myquiz.activities.MainActivity
 import com.example.myquiz.activities.quizPage.adapters.RecyclerViewAdapter
 import com.example.myquiz.customWidgets.Check24ProgressBar
 import com.example.myquiz.databinding.FragmentQuizfragmentBinding
-import com.example.myquiz.models.QuizPageUIData
-import com.example.myquiz.models.QuizPageViewModel
-import com.example.myquiz.models.RecyclerData
-
-
 import com.example.myquiz.models.*
 
 
@@ -46,7 +42,6 @@ class quizfragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-
     private var currentpostionofFragment = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,14 +56,28 @@ class quizfragment : Fragment() {
         super.onAttach(context)
 
 
+        // disable the timer
+        if (questionTimer != null) {
+            questionTimer!!.removeCallbacksAndMessages(null)
+            questionTimer = null
+        }
+        // update the fragments number
+        currentpostionofFragment= (activity as QuizPage).adapter.currentposition
+        myViewModel.updateQuestionIndex(currentpostionofFragment)
+
+
     }
     private lateinit var binding: FragmentQuizfragmentBinding
     private lateinit var dialogProgress: Check24ProgressBar
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
-    private lateinit var quizPageViewModel: QuizPageViewModel
+
+
+    private val myViewModel by activityViewModels<QuizPage.FragmentsUpdateViewModel>()
+
     private lateinit var quizPageUIData: QuizPageUIData
 
     private var questionTimer: Handler? = null
+    private var adapterPosition = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,6 +105,14 @@ class quizfragment : Fragment() {
         return binding.root
     }
 
+    override fun setMenuVisibility(isvisible: Boolean) {
+        super.setMenuVisibility(isvisible)
+        if (isvisible) {
+
+
+        }
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -117,21 +134,12 @@ class quizfragment : Fragment() {
     }
 
     override fun onResume() {
-
-        // disable the timer
-        if (questionTimer != null) {
-            questionTimer!!.removeCallbacksAndMessages(null)
-            questionTimer = null
-        }
-        // update the fragments number
-        currentpostionofFragment= (activity as QuizPage).adapter.currentposition
-        quizPageViewModel.updateQuestionIndex(currentpostionofFragment)
-
         super.onResume()
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         // initiate progress dialogue
         dialogProgress = Check24ProgressBar(requireActivity())
         dialogProgress.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -139,13 +147,12 @@ class quizfragment : Fragment() {
         dialogProgress.show()
 
         if(activity!=null) {
-            initViewModel()
             iniRecyclerView()
+            onItemClick()
+            initViewModel()
         }
-
         super.onViewCreated(view, savedInstanceState)
     }
-
 
     /**
      * ## initViewModel
@@ -154,24 +161,18 @@ class quizfragment : Fragment() {
      * * once the data arrives it reinitializes [iniRecyclerView] and [questionDataManager] with the new data
      * */
     private fun initViewModel() {
-        quizPageViewModel = ViewModelProvider(this)[QuizPageViewModel::class.java]
-
-        quizPageViewModel.liveDataForUI.observe(requireActivity()) {
+        myViewModel.fragmentUIData.observe(requireActivity()) {
             if (it == null) {
                 Toast.makeText(requireActivity(), "error in getting data", Toast.LENGTH_SHORT)
                     .show()
             } else {
-
                 quizPageUIData = it
-                (activity as QuizPage).adapter.numberOfFragments =quizPageUIData.numberOfQuestions
-
+               // only if inside the current fragment can we update the UI
                     questionDataManager()
+
             }
         }
-
-        quizPageViewModel.makeAPiCall()
     }
-
     /**
      * ## iniRecyclerView
      * * initializes the recyclerview
@@ -188,13 +189,20 @@ class quizfragment : Fragment() {
                 questionTimer!!.removeCallbacksAndMessages(null)
                 questionTimer = null
             }
+            adapterPosition = postion
+            myViewModel.onItemClick(answer)
 
-            val answerData = quizPageViewModel.onItemClick(answer)
+        }
+    }
+
+    private fun onItemClick(){
+        myViewModel.answerData.observe(viewLifecycleOwner) { answerData ->
+
             val answerResult = answerData[0]
             val correctAnswerIndex = answerData[1]
 
             val selectedView =
-                binding.answersRecyclerView.findViewHolderForAdapterPosition(postion)?.itemView
+                binding.answersRecyclerView.findViewHolderForAdapterPosition(adapterPosition)?.itemView
             val correctAnswerView = binding.answersRecyclerView.findViewHolderForAdapterPosition(
                 correctAnswerIndex as Int
             )?.itemView
@@ -233,7 +241,7 @@ class quizfragment : Fragment() {
                 correctAnswerView?.background =
                     AppCompatResources.getDrawable(requireActivity(), R.drawable.button_default)
 
-                quizPageViewModel.toNextQuestion(answerResult)
+                myViewModel.toNextQuestion(answerResult)
             }, 2000)
         }
     }
@@ -336,9 +344,8 @@ class quizfragment : Fragment() {
                 // reinitialize the dialog
                 dialogProgress.show()
                 // call the model again assuming that the answer is false
-                quizPageViewModel.toNextQuestion(false)
+                myViewModel.toNextQuestion(false)
             }, 10000)
         }
-
     }
 }

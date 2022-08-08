@@ -33,7 +33,6 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
      * Live data to be sent from the viewmodel
      */
     var liveDataForUI = MutableLiveData<QuizPageUIData?>()
-
     /**
      * List of ordered questions which are sent to the QuestionDataInitializer
      */
@@ -130,21 +129,12 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
     }
 
     // to update the index after going to the next fragment
-    fun updateQuestionIndex(currentpostionofFragment: Int) {
-
-        if(quizPageUIData.currentQuestionIndex  < currentpostionofFragment){
+    fun updateQuestionIndex(currentPostionofFragment: Int) {
+       // to next fragement
+        if(quizPageUIData.currentQuestionIndex  != currentPostionofFragment){
+            quizPageUIData.currentQuestionIndex = currentPostionofFragment
             toNextQuestion(false)
-        }else {
-            quizPageUIData.currentQuestionIndex = currentpostionofFragment
-            quizPageUIData = QuestionDataInitializer(
-                questionslistHashmap,
-                false, quizPageUIData, null
-            ).quizPageUIData
-
-            liveDataForUI.value = quizPageUIData
-
         }
-
 
     }
 }

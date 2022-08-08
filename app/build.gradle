@@ -84,6 +84,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.5.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0"
     implementation 'androidx.lifecycle:lifecycle-compiler:2.5.0'
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
 
 
     testImplementation 'junit:junit:4.13.2'

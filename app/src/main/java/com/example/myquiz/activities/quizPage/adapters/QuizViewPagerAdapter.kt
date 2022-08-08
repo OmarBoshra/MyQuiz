@@ -20,5 +20,4 @@ class QuizViewPagerAdapter (var numberOfFragments : Int,
     }
 
 
-
 }
