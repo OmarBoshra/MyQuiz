@@ -8,9 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.example.myquiz.GettingQuestionsUseCase
+import com.example.myquiz.QuizApplication
 import com.example.myquiz.activities.quizPage.adapters.QuizViewPagerAdapter
 import com.example.myquiz.databinding.QuizPageBinding
+import com.example.myquiz.interfaces.ApiInterface
 import com.example.myquiz.models.*
+import javax.inject.Inject
 
 
 class QuizPage : AppCompatActivity() {
@@ -34,12 +39,18 @@ class QuizPage : AppCompatActivity() {
 
     private val myViewModel by viewModels<FragmentsUpdateViewModel>()
 
+    @Inject
+    lateinit var viewModelFactory: QuizPageViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // initialize the UI binding
         binding = QuizPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        (application as QuizApplication).getRetroComponent2().injectActivity( this)
+
 
         initViewModel()
         initViewFragmentsModel()
@@ -71,10 +82,15 @@ class QuizPage : AppCompatActivity() {
      * */
     private fun initViewModel() {
 
+//        (application as QuizApplication).getRetroComponent().injectActivity(this)
+
         adapter = QuizViewPagerAdapter(1, this@QuizPage)
         binding.quizviewpager.adapter = adapter
 
-        quizPageViewModel = ViewModelProvider(this@QuizPage)[QuizPageViewModel::class.java]
+        quizPageViewModel = ViewModelProvider(this@QuizPage,viewModelFactory)[QuizPageViewModel::class.java]
+
+        (application as QuizApplication).getRetroComponent().injectViewModel(quizPageViewModel)
+
 
         quizPageViewModel.liveDataForUI.observe(this@QuizPage) {
             if (it == null) {
@@ -92,9 +108,6 @@ class QuizPage : AppCompatActivity() {
 //                    binding.quizviewpager.currentItem = quizPageUIData!!.currentQuestionIndex
 //
 //                })
-
-
-
 
                 myViewModel.setUIData(quizPageUIData)
             }

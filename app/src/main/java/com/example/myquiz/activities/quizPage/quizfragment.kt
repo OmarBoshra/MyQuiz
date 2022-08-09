@@ -191,7 +191,6 @@ class quizfragment : Fragment() {
             }
             adapterPosition = postion
             myViewModel.onItemClick(answer)
-
         }
     }
 
@@ -349,3 +348,4 @@ class quizfragment : Fragment() {
         }
     }
 }
+

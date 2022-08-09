@@ -10,7 +10,6 @@ import javax.inject.Singleton
 @Module
 class RetroModule {
 
-
     private val baseURL = "https://app.check24.de/vg2-quiz/"
 
     @Singleton
@@ -22,7 +21,6 @@ class RetroModule {
             .build()
 
     }
-
 
     @Singleton
     @Provides

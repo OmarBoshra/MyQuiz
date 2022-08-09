@@ -1,10 +1,13 @@
 package com.example.myquiz.models
 
 
+
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myquiz.GettingQuestionsUseCase
 import com.example.myquiz.QuizApplication
 import com.example.myquiz.activities.quizPage.views.QuestionDataInitializer
 import com.example.myquiz.interfaces.ApiInterface
@@ -12,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class QuizPageViewModel(application: Application) : AndroidViewModel(application) {
+ class QuizPageViewModel  @Inject constructor(private val getQuestionsUseCase : GettingQuestionsUseCase) : ViewModel() {
     /**
      * ## QuizPageViewModel
      * Manages __communication__  between Activity/itsfragments and Models within API or other data models , thus separating between the business logic and the UI
@@ -26,8 +29,7 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
      * @return  - liveDataForUI
      *  - answerResult
      */
-    @Inject
-    lateinit var mService: ApiInterface
+
 
     /**
      * Live data to be sent from the viewmodel
@@ -47,7 +49,7 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
         /**
          * initialize the application class and inject to its dagger2 component the viewmodel
          */
-        (application as QuizApplication).getRetroComponent().inject(this)
+
     }
 
     /**
@@ -57,9 +59,9 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
      */
     fun makeAPiCall() {
         viewModelScope.launch {
-            val quizDataResponse = mService.getQuizData()
-            if (quizDataResponse.isSuccessful) {
-                val responseBody = quizDataResponse.body()
+
+           val responseBody =  getQuestionsUseCase.getQuestionsData()
+
                 if (responseBody != null) {
                     responseBody.questions.forEach {
                         it.question?.let { id ->
@@ -80,7 +82,6 @@ class QuizPageViewModel(application: Application) : AndroidViewModel(application
                 }
             }
         }
-    }
 
     /**
      * ## onItemClick
